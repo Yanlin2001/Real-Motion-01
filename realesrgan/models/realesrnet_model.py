@@ -176,10 +176,10 @@ class RealESRNetModel(SRModel):
             # 转为单通道灰度图
             L_gt = self.gt.mean(dim=1, keepdim=False)
 
-            print('out shape:', out.shape)
+            print('L_gt shape:', L_gt.shape)
 
             rounds = 5
-            K_data = np.zeros((1, out.shape[1], out.shape[2]), dtype=np.complex64)
+            K_data = np.zeros((1, L_gt.shape[1], L_gt.shape[2]), dtype=np.complex64)
 
             for i in range(rounds):
                 if i == rounds//2:
