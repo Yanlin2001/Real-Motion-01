@@ -103,7 +103,7 @@ class RealESRGANDataset(data.Dataset):
                 break
             finally:
                 retry -= 1
-        img_gt = imfrombytes(img_bytes, flag='grayscale', float32=True)
+        img_gt = imfrombytes(img_bytes, float32=True)
 
         # -------------------- Do augmentation for training: flip, rotation -------------------- #
         img_gt = augment(img_gt, self.opt['use_hflip'], self.opt['use_rot'])
@@ -181,7 +181,7 @@ class RealESRGANDataset(data.Dataset):
             sinc_kernel = self.pulse_tensor
 
         # BGR to RGB, HWC to CHW, numpy to tensor
-        img_gt = img2tensor([img_gt], bgr2rgb=False, float32=True)[0]
+        img_gt = img2tensor([img_gt], bgr2rgb=True, float32=True)[0]
         kernel = torch.FloatTensor(kernel)
         kernel2 = torch.FloatTensor(kernel2)
 
