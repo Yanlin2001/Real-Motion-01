@@ -47,7 +47,7 @@ datasets:
     name: MRI_Brain01
     type: RealESRGANDataset
     dataroot_gt: datasets/motion01
-    dataroot_lq: datasets/motion01
+    #dataroot_lq: datasets/motion01
     meta_info: datasets/motion01/meta_info/meta_info_test.txt
     io_backend:
       type: disk
