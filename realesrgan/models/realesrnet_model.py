@@ -202,7 +202,7 @@ class RealESRNetModel(SRModel):
             print('add channel out shape:', out.shape)
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
-            print('clamp done')
+            print('clamp done lq shape:', self.lq.shape)
             # random crop
             gt_size = self.opt['gt_size']
             #self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
