@@ -1,5 +1,5 @@
 # general settings
-name: 001_MRI2024_brain_train_20240125_004_usp_de6
+name: 001_motion_brain_train_20240215_test01
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -7,16 +7,9 @@ manual_seed: 0
 
 gt_usm: True  # USM the ground-truth
 
-# the first degradation process
-rotate_range: [-10, 10] # the range of rotation(旋转范围)
-vertical_trans_range: [-0.1, 0.1] # the range of vertical translation(垂直平移范围)
-horizontal_trans_range: [-0.1, 0.1] # the range of horizontal translation(水平平移范围)
-
 # Motion process
-resize_prob: [0.2, 0.7, 0.1]  # up, down, keep
-resize_range: [0.8, 1.2] # the range of resizing
-rotation_prob: 0.7
-rotation_range: [-10, 10] # 期望概率分布符合正态分布
+rotate_prob: 0.7
+rotate_range: [-10, 10] # 期望概率分布符合正态分布
 translation_prob: 0.7
 translation_range: [-0.1, 0.1] # 期望概率分布符合正态分布
 
@@ -24,13 +17,6 @@ perspective_prob: [0.3, 0.3, 0.4]  # pitch, yaw, keep
 perspective_range: [0.1, 0.2] # 期望概率分布符合正态分布
 stretch_prob: [0.3, 0.3, 0.4]  # expand, shrink, keep
 stretch_range: [0.8, 1.2] # 期望概率分布符合正态分布
-
-motion_list1: ['roll', 'pitch', 'yaw', left_right', 'up_down', 'forward_backward']
-motion_prob1: [0.1, 0.1, 0.1, 0.3, 0.3, 0.1]
-
-motion_list2: ['roll', 'pitch', 'yaw', left_right', 'up_down', 'forward_backward']
-motion_prob2: [0.1, 0.1, 0.1, 0.3, 0.3, 0.1]
-
 
 
 
@@ -60,9 +46,9 @@ datasets:
   train:
     name: MRI_Brain01
     type: RealESRGANDataset
-    dataroot_gt: datasets/Brain_MRI_2024/train
-    dataroot_lq: datasets/Brain_MRI_2024/train
-    meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024_usp.txt
+    dataroot_gt: datasets/motion01/train
+    dataroot_lq: datasets/motion01/train
+    meta_info: datasets/motion01/meta_info/meta_info_test.txt
     io_backend:
       type: disk
 
@@ -99,72 +85,8 @@ datasets:
   val:
     name: val_008
     type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-008
-    dataroot_lq: datasets/Brain_MRI_2024/val/008-4
-    io_backend:
-      type: disk
-
-  val_2:
-    name: val_006
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006
-    dataroot_lq: datasets/Brain_MRI_2024/val/006-4
-    io_backend:
-      type: disk
-
-  val_3:
-    name: val_004
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004
-    dataroot_lq: datasets/Brain_MRI_2024/val/004-4
-    io_backend:
-      type: disk
-
-  val_4:
-    name: val_002
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-002
-    dataroot_lq: datasets/Brain_MRI_2024/val/002-4
-    io_backend:
-      type: disk
-
-  val_5:
-    name: val_006_4_1
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006-4-1
-    dataroot_lq: datasets/Brain_MRI_2024/val/006-4-1
-    io_backend:
-      type: disk
-
-  val_6:
-    name: val_006_2
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006-2
-    dataroot_lq: datasets/Brain_MRI_2024/val/006-2
-    io_backend:
-      type: disk
-
-  val_7:
-    name: val_004_4_1
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004-4-1
-    dataroot_lq: datasets/Brain_MRI_2024/val/004-4-1
-    io_backend:
-      type: disk
-
-  val_8:
-    name: val_004_2
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004-2
-    dataroot_lq: datasets/Brain_MRI_2024/val/004-2
-    io_backend:
-      type: disk
-
-  val_9:
-    name: val_004_6
-    type: PairedImageDataset
-    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004-6
-    dataroot_lq: datasets/Brain_MRI_2024/val/004-6
+    dataroot_gt: datasets/motion01/val
+    dataroot_lq: datasets/motion01/val
     io_backend:
       type: disk
 
