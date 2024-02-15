@@ -1,0 +1,236 @@
+# general settings
+name: 001_MRI2024_brain_train_20240125_004_usp_de6
+model_type: RealESRNetModel
+scale: 1
+num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
+manual_seed: 0
+
+gt_usm: True  # USM the ground-truth
+
+# the first degradation process
+rotate_range: [-10, 10] # the range of rotation(旋转范围)
+vertical_trans_range: [-0.1, 0.1] # the range of vertical translation(垂直平移范围)
+horizontal_trans_range: [-0.1, 0.1] # the range of horizontal translation(水平平移范围)
+
+# Motion process
+resize_prob: [0.2, 0.7, 0.1]  # up, down, keep
+resize_range: [0.8, 1.2] # the range of resizing
+rotation_prob: 0.7
+rotation_range: [-10, 10] # 期望概率分布符合正态分布
+translation_prob: 0.7
+translation_range: [-0.1, 0.1] # 期望概率分布符合正态分布
+
+perspective_prob: [0.3, 0.3, 0.4]  # pitch, yaw, keep
+perspective_range: [0.1, 0.2] # 期望概率分布符合正态分布
+stretch_prob: [0.3, 0.3, 0.4]  # expand, shrink, keep
+stretch_range: [0.8, 1.2] # 期望概率分布符合正态分布
+
+motion_list1: ['roll', 'pitch', 'yaw', left_right', 'up_down', 'forward_backward']
+motion_prob1: [0.1, 0.1, 0.1, 0.3, 0.3, 0.1]
+
+motion_list2: ['roll', 'pitch', 'yaw', left_right', 'up_down', 'forward_backward']
+motion_prob2: [0.1, 0.1, 0.1, 0.3, 0.3, 0.1]
+
+
+
+
+# resize_prob: [0.2, 0.7, 0.1]  # up, down, keep
+# resize_range: [0.15, 1.5]
+gaussian_noise_prob: 0.5
+noise_range: [1, 30]
+poisson_scale_range: [0.05, 3]
+gray_noise_prob: 0.4
+jpeg_range: [30, 95]
+
+# the second degradation process
+second_blur_prob: 0.8
+resize_prob2: [0.3, 0.4, 0.3]  # up, down, keep
+resize_range2: [0.3, 1.2]
+gaussian_noise_prob2: 0.5
+noise_range2: [1, 25]
+poisson_scale_range2: [0.05, 2.5]
+gray_noise_prob2: 0.4
+jpeg_range2: [30, 95]
+
+gt_size: 256
+queue_size: 180
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: MRI_Brain01
+    type: RealESRGANDataset
+    dataroot_gt: datasets/Brain_MRI_2024/train
+    dataroot_lq: datasets/Brain_MRI_2024/train
+    meta_info: datasets/Brain_MRI_2024/meta_info/meta_info_MRI_Brain2024_usp.txt
+    io_backend:
+      type: disk
+
+    blur_kernel_size: 21
+    kernel_list: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
+    kernel_prob: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    sinc_prob: 0.1
+    blur_sigma: [0.2, 3]
+    betag_range: [0.5, 4]
+    betap_range: [1, 2]
+
+    blur_kernel_size2: 21
+    kernel_list2: ['iso', 'aniso', 'generalized_iso', 'generalized_aniso', 'plateau_iso', 'plateau_aniso']
+    kernel_prob2: [0.45, 0.25, 0.12, 0.03, 0.12, 0.03]
+    sinc_prob2: 0.1
+    blur_sigma2: [0.2, 1.5]
+    betag_range2: [0.5, 4]
+    betap_range2: [1, 2]
+
+    final_sinc_prob: 0.8
+
+    gt_size: 256
+    use_hflip: False # Horizontal Flip(Left-Right Flip)，即水平翻转
+    use_rot: False
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 5
+    batch_size_per_gpu: 12
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  # Uncomment these for validation
+  val:
+    name: val_008
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-008
+    dataroot_lq: datasets/Brain_MRI_2024/val/008-4
+    io_backend:
+      type: disk
+
+  val_2:
+    name: val_006
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006
+    dataroot_lq: datasets/Brain_MRI_2024/val/006-4
+    io_backend:
+      type: disk
+
+  val_3:
+    name: val_004
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004
+    dataroot_lq: datasets/Brain_MRI_2024/val/004-4
+    io_backend:
+      type: disk
+
+  val_4:
+    name: val_002
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-002
+    dataroot_lq: datasets/Brain_MRI_2024/val/002-4
+    io_backend:
+      type: disk
+
+  val_5:
+    name: val_006_4_1
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006-4-1
+    dataroot_lq: datasets/Brain_MRI_2024/val/006-4-1
+    io_backend:
+      type: disk
+
+  val_6:
+    name: val_006_2
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-006-2
+    dataroot_lq: datasets/Brain_MRI_2024/val/006-2
+    io_backend:
+      type: disk
+
+  val_7:
+    name: val_004_4_1
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004-4-1
+    dataroot_lq: datasets/Brain_MRI_2024/val/004-4-1
+    io_backend:
+      type: disk
+
+  val_8:
+    name: val_004_2
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004-2
+    dataroot_lq: datasets/Brain_MRI_2024/val/004-2
+    io_backend:
+      type: disk
+
+  val_9:
+    name: val_004_6
+    type: PairedImageDataset
+    dataroot_gt: datasets/Brain_MRI_2024/val/raw_image-004-6
+    dataroot_lq: datasets/Brain_MRI_2024/val/004-6
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: RRDBNet
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 23
+  num_grow_ch: 32
+  scale: 1
+
+# path
+path:
+  #pretrain_network_g: experiments/pretrained_models/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth / /kaggle/input/net-g-40000-b2024/net_g_40000_b2024.pth
+  pretrain_network_g: ~
+  param_key_g: params_ema
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: Adam
+    lr: !!float 2e-4
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [40000]
+    gamma: 0.5
+
+  total_iter: 40000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0
+    reduction: mean
+
+# Uncomment these for validation
+# validation settings
+val:
+  val_freq: !!float 1e4
+  save_img: True
+
+  metrics:
+    psnr: # metric name
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: !!float 5e3
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
