@@ -154,10 +154,10 @@ class RealESRNetModel(SRModel):
             def kspace_scan(image_tensor, K_data, cur_round, tol_round):
                 # 将图像张量转换为K空间数据
                 k_space_data = np.fft.fft2(image_tensor, axes=(-2, -1))
-
+                print('B01')
                 # 进行 fftshift 操作将低频移到中心
                 k_space_data = np.fft.fftshift(k_space_data, axes=(-2, -1))
-
+                print('B02')
                 # 获取图像的高度和宽度
                 _, H, W = image_tensor.shape
 
@@ -165,10 +165,10 @@ class RealESRNetModel(SRModel):
                 start_row = cur_round * H // tol_round
                 end_row = (cur_round + 1) * H // tol_round
                 print(start_row, end_row)
-
+                print('B03')
                 # 截取并填充到K_data中
                 K_data[:, start_row:end_row, :] = k_space_data[:, start_row:end_row, :]
-
+                print('B04')
                 return K_data
 
             print('gt shape:', self.gt.shape)
