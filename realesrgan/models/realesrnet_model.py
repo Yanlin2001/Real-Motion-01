@@ -181,6 +181,7 @@ class RealESRNetModel(SRModel):
 
             rounds = 5
             K_data = np.zeros((1, L_gt.shape[1], L_gt.shape[2]), dtype=np.complex64)
+            K_data = torch.from_numpy(K_data).to(self.device)
             print('before rounds')
             for i in range(rounds):
                 if i == rounds//2:
