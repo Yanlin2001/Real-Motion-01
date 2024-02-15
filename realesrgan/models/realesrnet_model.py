@@ -173,7 +173,10 @@ class RealESRNetModel(SRModel):
 
             print('gt shape:', self.gt.shape)
 
+            # 转为单通道灰度图
+            out = self.gt.mean(dim=1, keepdim=True)
 
+            print('out shape:', out.shape)
 
 
             # ----------------------- The first degradation process ----------------------- #
