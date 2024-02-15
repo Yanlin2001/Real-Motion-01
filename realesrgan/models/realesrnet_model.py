@@ -200,6 +200,9 @@ class RealESRNetModel(SRModel):
             # 增加通道维度
             out = torch.unsqueeze(out, dim=1)
             print('add channel out shape:', out.shape)
+            # 增加通道数
+            out = out.repeat(1, 3, 1, 1)
+            print('repeat out shape:', out.shape)
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
             print('clamp done lq shape:', self.lq.shape)
