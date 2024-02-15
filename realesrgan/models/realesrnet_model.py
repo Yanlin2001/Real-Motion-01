@@ -180,7 +180,7 @@ class RealESRNetModel(SRModel):
 
             rounds = 5
             K_data = np.zeros((1, L_gt.shape[1], L_gt.shape[2]), dtype=np.complex64)
-
+            print('before rounds')
             for i in range(rounds):
                 if i == rounds//2:
                     K_data = kspace_scan(L_gt, K_data, i, rounds)
