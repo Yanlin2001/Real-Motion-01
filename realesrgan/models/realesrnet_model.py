@@ -199,17 +199,19 @@ class RealESRNetModel(SRModel):
             print('out shape:', out.shape)
             # 增加通道维度
             out = torch.unsqueeze(out, dim=1)
-            print('out shape:', out.shape)
+            print('add channel out shape:', out.shape)
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
-
+            print('clamp done')
             # random crop
             gt_size = self.opt['gt_size']
             #self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
             # training pair pool
             self._dequeue_and_enqueue()
+            print('dequeue and enqueue done')
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
+            print('contiguous done')
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
