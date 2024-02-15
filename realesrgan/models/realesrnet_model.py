@@ -174,7 +174,7 @@ class RealESRNetModel(SRModel):
             print('gt shape:', self.gt.shape)
 
             # 转为单通道灰度图
-            out = self.gt.mean(dim=1, keepdim=False)
+            L_gt = self.gt.mean(dim=1, keepdim=False)
 
             print('out shape:', out.shape)
 
@@ -183,13 +183,11 @@ class RealESRNetModel(SRModel):
 
             for i in range(rounds):
                 if i == rounds//2:
-                    K_data = kspace_scan(out, K_data, i, rounds)
+                    K_data = kspace_scan(L_gt, K_data, i, rounds)
                 else:
-                    out_image = random_motion_transform(self.gt, width, height)
-                    out_image = center_crop(out_image, (400, 400))
-                    combined_result = out_image
-                    #print(combined_result.shape)
-                    K_data = kspace_scan(combined_result, K_data, i, rounds)
+                    out_image = random_motion_transform(L_gt, width, height)
+                    #out_image = center_crop(out_image, (400, 400))
+                    K_data = kspace_scan(out_image, K_data, i, rounds)
 
             out = np.abs(np.fft.ifft2(np.fft.ifftshift(K_data, axes=(-2, -1)), axes=(-2, -1)))
 
