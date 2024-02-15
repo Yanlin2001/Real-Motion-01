@@ -194,7 +194,7 @@ class RealESRNetModel(SRModel):
                     print('A02')
             print('after rounds')
 
-            out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, axes=(-2, -1)), axes=(-2, -1)))
+            out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
 
             print('out shape:', out.shape)
             # 增加通道维度
