@@ -198,7 +198,7 @@ class RealESRNetModel(SRModel):
 
             print('out shape:', out.shape)
             # 增加通道维度
-            out = np.expand_dims(out, axis=1)
+            out = torch.unsqueeze(out, dim=1)
             print('out shape:', out.shape)
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
