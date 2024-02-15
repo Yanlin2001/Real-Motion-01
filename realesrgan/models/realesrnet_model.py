@@ -151,12 +151,13 @@ class RealESRNetModel(SRModel):
 
                 return out
 
+
             def kspace_scan(image_tensor, K_data, cur_round, tol_round):
                 # 将图像张量转换为K空间数据
-                k_space_data = np.fft.fft2(image_tensor, axes=(-2, -1))
+                k_space_data = torch.fft.fft2(image_tensor, dim=(-2, -1))
                 print('B01')
                 # 进行 fftshift 操作将低频移到中心
-                k_space_data = np.fft.fftshift(k_space_data, axes=(-2, -1))
+                k_space_data = torch.fft.fftshift(k_space_data, dim=(-2, -1))
                 print('B02')
                 # 获取图像的高度和宽度
                 _, H, W = image_tensor.shape
