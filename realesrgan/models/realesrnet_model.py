@@ -188,7 +188,7 @@ class RealESRNetModel(SRModel):
                     out_image = random_motion_transform(L_gt, width, height)
                     #out_image = center_crop(out_image, (400, 400))
                     K_data = kspace_scan(out_image, K_data, i, rounds)
-
+            print('after rounds')
             out = np.abs(np.fft.ifft2(np.fft.ifftshift(K_data, axes=(-2, -1)), axes=(-2, -1)))
 
             print('out shape:', out.shape)
