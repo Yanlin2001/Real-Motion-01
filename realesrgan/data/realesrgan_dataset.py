@@ -120,7 +120,7 @@ class RealESRGANDataset(data.Dataset):
             pad_bottom = pad_h - pad_top
             pad_left = pad_w // 2
             pad_right = pad_w - pad_left
-            img_gt = cv2.copyMakeBorder(img_gt, pad_top, pad_bottom, pad_left, pad_right, cv2.BORDER_REFLECT_101)
+            img_gt = cv2.copyMakeBorder(img_gt, pad_top, pad_bottom, pad_left, pad_right, cv2.cv2.BORDER_WRAP)
         # crop
         if img_gt.shape[0] > crop_pad_size or img_gt.shape[1] > crop_pad_size:
             h, w = img_gt.shape[0:2]
