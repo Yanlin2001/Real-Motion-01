@@ -214,7 +214,35 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
+        import datetime
+        import os
+        import torchvision.transforms as transforms
 
+        # Assuming self.lq and self.gt are PyTorch tensors with shape (batch_size, channels, height, width)
+        batch_size = self.lq.size(0)
+
+        # Get current time
+        current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # Create a folder to save images
+        folder_path = f"/kaggle/working/images_{current_time}"
+        os.makedirs(folder_path, exist_ok=True)
+
+        for sample_index in range(batch_size):
+            # Convert to PIL Image
+            lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())
+            gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())
+
+            # Save image with current time and index as filename
+            save_path = os.path.join(folder_path, f"lq_image_{current_time}_{sample_index}.png")
+            save_path2 = os.path.join(folder_path, f"gt_image_{current_time}_{sample_index}.png")
+            lq_image.save(save_path)
+            gt_image.save(save_path2)
+
+            print(f"Image saved at: {save_path}")
+            print(f"Image saved at: {save_path2}")
+
+        print(f"All images saved in folder: {folder_path}")
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
