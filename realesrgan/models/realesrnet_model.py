@@ -208,7 +208,7 @@ class RealESRNetModel(SRModel):
             print('clamp done lq shape:', self.lq.shape)
             # random crop
             gt_size = self.opt['gt_size']
-            #self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
+            self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
             # training pair pool
             self._dequeue_and_enqueue()
@@ -223,7 +223,6 @@ class RealESRNetModel(SRModel):
                 self.gt_usm = self.usm_sharpener(self.gt)
         import datetime
         import os
-        import matplotlib.pyplot as plt
         import torchvision.transforms as transforms
 
         # Assuming self.lq and self.gt are PyTorch tensors with shape (batch_size, channels, height, width)
