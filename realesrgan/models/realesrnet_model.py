@@ -155,101 +155,65 @@ class RealESRNetModel(SRModel):
             def kspace_scan(image_tensor, K_data, cur_round, tol_round):
                 # 将图像张量转换为K空间数据
                 k_space_data = torch.fft.fft2(image_tensor, dim=(-2, -1))
-                print('B01')
+
                 # 进行 fftshift 操作将低频移到中心
                 k_space_data = torch.fft.fftshift(k_space_data, dim=(-2, -1))
-                print('B02')
+
                 # 获取图像的高度和宽度
                 _, H, W = image_tensor.shape
 
                 # 计算当前应该填充的行范围
                 start_row = cur_round * H // tol_round
                 end_row = (cur_round + 1) * H // tol_round
-                print(start_row, end_row)
-                print('B03')
+
                 # 截取并填充到K_data中
                 K_data[:, start_row:end_row, :] = k_space_data[:, start_row:end_row, :]
-                print('B04')
-                return K_data
 
-            print('gt shape:', self.gt.shape)
+                return K_data
 
             # 转为单通道灰度图
             L_gt = self.gt.mean(dim=1, keepdim=False)
 
-            print('L_gt shape:', L_gt.shape)
+            rounds = np.random.choice(range(self.opt['rounds_range'][0], self.opt['rounds_range'][1] + 1, 2))
 
-            rounds = 5
             K_data = np.zeros((L_gt.shape[0], L_gt.shape[1], L_gt.shape[2]), dtype=np.complex64)
             K_data = torch.from_numpy(K_data).to(self.device)
-            print('before rounds')
+
             for i in range(rounds):
                 if i == rounds//2:
                     K_data = kspace_scan(L_gt, K_data, i, rounds)
                 else:
-                    out_image = random_motion_transform(L_gt, width, height)
-                    print('A01')
+                    out_image = random_motion_transform(L_gt, width, height, rotate_prob=self.opt['rotate_prob'], rotate_range=self.opt['rotate_range'], translation_prob=self.opt['translation_prob'], translation_range=self.opt['translation_range'], perspective_prob=self.opt['perspective_prob'], perspective_range=self.opt['perspective_range'], stretch_prob=self.opt['stretch_prob'], stretch_range=self.opt['stretch_range'])
+
                     #out_image = center_crop(out_image, (400, 400))
                     K_data = kspace_scan(out_image, K_data, i, rounds)
-                    print('A02')
-            print('after rounds')
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
 
-            print('out shape:', out.shape)
             # 增加通道维度
             out = torch.unsqueeze(out, dim=1)
-            print('add channel out shape:', out.shape)
+
             # 增加通道数
             out = out.repeat(1, 3, 1, 1)
-            print('repeat out shape:', out.shape)
+
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
-            print('clamp done lq shape:', self.lq.shape)
+
             # random crop
             gt_size = self.opt['gt_size']
             self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
             # training pair pool
             self._dequeue_and_enqueue()
-            print('dequeue and enqueue done')
+
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
-            print('contiguous done')
+
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
-        import datetime
-        import os
-        import torchvision.transforms as transforms
-
-        # Assuming self.lq and self.gt are PyTorch tensors with shape (batch_size, channels, height, width)
-        batch_size = self.lq.size(0)
-
-        # Get current time
-        current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-
-        # Create a folder to save images
-        folder_path = f"/kaggle/working/images_{current_time}"
-        os.makedirs(folder_path, exist_ok=True)
-
-        for sample_index in range(batch_size):
-            # Convert to PIL Image
-            lq_image = transforms.ToPILImage()(self.lq[sample_index].cpu())
-            gt_image = transforms.ToPILImage()(self.gt[sample_index].cpu())
-
-            # Save image with current time and index as filename
-            save_path = os.path.join(folder_path, f"lq_image_{current_time}_{sample_index}.png")
-            save_path2 = os.path.join(folder_path, f"gt_image_{current_time}_{sample_index}.png")
-            lq_image.save(save_path)
-            gt_image.save(save_path2)
-
-            print(f"Image saved at: {save_path}")
-            print(f"Image saved at: {save_path2}")
-
-        print(f"All images saved in folder: {folder_path}")
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
