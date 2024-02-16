@@ -94,18 +94,24 @@ datasets:
     type: PairedImageDataset
     dataroot_gt: datasets/motion01/val/hard_gt
     dataroot_lq: datasets/motion01/val/hard
+    io_backend:
+      type: disk
 
   val_3:
     name: mid
     type: PairedImageDataset
     dataroot_gt: datasets/motion01/val/mid_gt
     dataroot_lq: datasets/motion01/val/mid
+    io_backend:
+      type: disk
 
   val_4:
     name: rotate_trans
     type: PairedImageDataset
     dataroot_gt: datasets/motion01/val/rotate_trans_gt
     dataroot_lq: datasets/motion01/val/rotate_trans
+    io_backend:
+      type: disk
 
 # network structures
 network_g:
