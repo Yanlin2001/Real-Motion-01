@@ -12,6 +12,7 @@ import torch
 from torchvision.transforms.functional import perspective as perspective_transform
 from torchvision.transforms.functional import rotate, resize, center_crop
 from torchvision.transforms.functional import InterpolationMode
+from typing import Sequence, Optional, Union, Tuple
 
 @MODEL_REGISTRY.register()
 class RealESRNetModel(SRModel):
@@ -70,12 +71,21 @@ class RealESRNetModel(SRModel):
     def feed_data(self, data):
         """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         """
+
+        rot90_prob= 0.5 # 旋转90度概率
+        undersample_prob= 0.5 # 降采样概率
+        center_fraction_range= [0.6, 0.9] # 中心部分采样范围
+        acceleration_range= [1, 8] # 加速范围
+
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
                 self.gt = self.usm_sharpener(self.gt)
+            # rotate 90
+            if np.random.uniform(0, 1) < rot90_prob:
+                self.gt = torch.rot90(self.gt, 1, [2, 3])
 
             self.kernel1 = data['kernel1'].to(self.device)
             self.kernel2 = data['kernel2'].to(self.device)
@@ -85,6 +95,35 @@ class RealESRNetModel(SRModel):
 
             width, height = self.gt.size()[-1], self.gt.size()[-2]
             # ----------------------- The first motion process ----------------------- #
+
+            def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
+                if len(center_fractions) != len(accelerations):
+                    raise ValueError("Number of center fractions should match number of accelerations")
+
+                rng = np.random.RandomState(seed)
+                choice = rng.randint(0, len(accelerations))
+                center_fraction = center_fractions[choice]
+                acceleration = accelerations[choice]
+
+                num_low_freqs = int(round(num_cols * center_fraction))
+                prob = (num_cols / acceleration - num_low_freqs) / (num_cols - num_low_freqs)
+
+                mask = rng.uniform(size=num_cols) < prob
+                pad = (num_cols - num_low_freqs + 1) // 2
+                mask[pad: pad + num_low_freqs] = True
+
+                mask_shape = [1, 1] + [1] * (len(mask.shape) - 2)
+                mask_shape[-2] = num_cols
+                mask = torch.from_numpy(mask.reshape(*mask_shape).astype(np.float32))
+
+                # print("Generated Random Mask:")
+                # print(mask)
+                print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}")
+                true_count = int(mask.sum())
+                print(f"Number of True values in the mask: {true_count}")
+
+                return mask
+
             def random_motion_transform(image, width, height,
                             rotate_prob = 0.5, rotate_range = [-5, 5],
                             translation_prob = [0.2, 0.2, 0.6], translation_range = [-0.1, 0.1],
@@ -190,6 +229,12 @@ class RealESRNetModel(SRModel):
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
 
+            if np.random.uniform(0, 1) < undersample_prob:
+                center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
+                acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
+                mask = generate_random_mask([center_fraction], [acceleration], out.shape[-1],)
+                out = out * mask.t()
+
             # 增加通道维度
             out = torch.unsqueeze(out, dim=1)
 
@@ -214,7 +259,7 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
-        '''
+
         import datetime
         import os
         import torchvision.transforms as transforms
@@ -244,7 +289,7 @@ class RealESRNetModel(SRModel):
             print(f"Image saved at: {save_path2}")
 
         print(f"All images saved in folder: {folder_path}")
-        '''
+
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False

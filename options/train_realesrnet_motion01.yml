@@ -8,15 +8,19 @@ manual_seed: 0
 gt_usm: True  # USM the ground-truth
 
 # Motion process
-rounds_range: [3,11]
-rotate_prob: 0.5
-rotate_range: [-5, 5]
-translation_prob: [0.2, 0.2, 0.6]
-translation_range: [-0.1, 0.1]
-perspective_prob: [0.3, 0.3, 0.4]  # pitch, yaw, keep
-perspective_range: [-0.1, 0.1]
-stretch_prob: 0.4
-stretch_range: [-0.1, 0.1]
+rot90_prob: 0.5 # 旋转90度概率
+undersample_prob: 1.0 # 降采样概率
+center_fraction_range: [0.6, 0.9] # 中心部分采样范围
+acceleration_range: [1, 8] # 加速范围
+rounds_range: [3,11] # 运动阶段数
+rotate_prob: 0.5 # 旋转概率
+rotate_range: [-5, 5] # 旋转角度范围
+translation_prob: [0.2, 0.2, 0.6] # un-down, left-right, keep
+translation_range: [-0.1, 0.1]  # 平移范围
+perspective_prob: [0.3, 0.3, 0.4]  # un-down, left-right, keep
+perspective_range: [-0.1, 0.1] # 透视范围
+stretch_prob: 0.4 # 伸缩概率
+stretch_range: [-0.1, 0.1] # 伸缩范围
 
 # the first degradation process
 resize_prob: [0.2, 0.7, 0.1]  # up, down, keep
