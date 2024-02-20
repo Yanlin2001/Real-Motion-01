@@ -227,14 +227,15 @@ class RealESRNetModel(SRModel):
                     #out_image = center_crop(out_image, (400, 400))
                     K_data = kspace_scan(out_image, K_data, i, rounds)
 
-            out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
-
             if np.random.uniform(0, 1) < undersample_prob:
                 center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
                 acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
                 mask = generate_random_mask([center_fraction], [acceleration], out.shape[-1],)
                 mask = mask.to(self.device)
                 out = out * mask.t()
+
+            out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+
 
             # 增加通道维度
             out = torch.unsqueeze(out, dim=1)
