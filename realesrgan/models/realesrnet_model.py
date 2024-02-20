@@ -76,6 +76,7 @@ class RealESRNetModel(SRModel):
         undersample_prob= self.opt['undersample_prob'] # 采样概率
         center_fraction_range= self.opt['center_fraction_range'] # 中心分数范围
         acceleration_range= self.opt['acceleration_range'] # 加速度范围
+        horizontal_mask_prob = self.opt['horizontal_mask_prob'] # 水平mask概率
 
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
@@ -233,7 +234,9 @@ class RealESRNetModel(SRModel):
                 mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
                 print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}", K_data.shape[-1])
                 mask = mask.to(self.device)
-                K_data = K_data * mask.t()
+                if np.random.uniform(0, 1) > horizontal_mask_prob:
+                    mask = mask.t()
+                K_data = K_data * mask
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
 
