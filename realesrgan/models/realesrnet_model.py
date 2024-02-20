@@ -71,11 +71,11 @@ class RealESRNetModel(SRModel):
     def feed_data(self, data):
         """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         """
-
-        rot90_prob= 0.5 # 旋转90度概率
-        undersample_prob= 0.5 # 降采样概率
-        center_fraction_range= [0.6, 0.9] # 中心部分采样范围
-        acceleration_range= [1, 8] # 加速范围
+        # 有空嵌入下面的代码
+        rot90_prob= self.opt['rot90_prob'] # 旋转90概率
+        undersample_prob= self.opt['undersample_prob'] # 采样概率
+        center_fraction_range= self.opt['center_fraction_range'] # 中心分数范围
+        acceleration_range= self.opt['acceleration_range'] # 加速度范围
 
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
