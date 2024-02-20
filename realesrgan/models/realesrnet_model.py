@@ -232,7 +232,7 @@ class RealESRNetModel(SRModel):
                 acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
                 mask = generate_random_mask([center_fraction], [acceleration], out.shape[-1],)
                 mask = mask.to(self.device)
-                out = out * mask.t()
+                K_data = K_data * mask.t()
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
 
