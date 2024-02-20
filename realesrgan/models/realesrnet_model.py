@@ -119,9 +119,9 @@ class RealESRNetModel(SRModel):
 
                 # print("Generated Random Mask:")
                 # print(mask)
-                print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}")
-                true_count = int(mask.sum())
-                print(f"Number of True values in the mask: {true_count}")
+                # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}")
+                # true_count = int(mask.sum())
+                # print(f"Number of True values in the mask: {true_count}")
 
                 return mask
 
