@@ -230,7 +230,7 @@ class RealESRNetModel(SRModel):
             if np.random.uniform(0, 1) < undersample_prob:
                 center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
                 acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
-                mask = generate_random_mask([center_fraction], [acceleration], out.shape[-1],)
+                mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
                 mask = mask.to(self.device)
                 K_data = K_data * mask.t()
 
