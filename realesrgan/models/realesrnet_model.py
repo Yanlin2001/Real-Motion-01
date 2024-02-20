@@ -233,6 +233,7 @@ class RealESRNetModel(SRModel):
                 center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
                 acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
                 mask = generate_random_mask([center_fraction], [acceleration], out.shape[-1],)
+                mask = mask.to(self.device)
                 out = out * mask.t()
 
             # 增加通道维度
