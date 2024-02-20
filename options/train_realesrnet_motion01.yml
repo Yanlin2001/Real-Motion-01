@@ -142,6 +142,30 @@ datasets:
     io_backend:
       type: disk
 
+  val_8:
+    name: real_motion01_under
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run01_under
+    dataroot_lq: datasets/motion01/real_motion/run01_under
+    io_backend:
+      type: disk
+
+  val_9:
+    name: real_motion02_under
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run02_under
+    dataroot_lq: datasets/motion01/real_motion/run02_under
+    io_backend:
+      type: disk
+
+  val_10:
+    name: real_motion03_under
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run03_under
+    dataroot_lq: datasets/motion01/real_motion/run03_under
+    io_backend:
+      type: disk
+
 # network structures
 network_g:
   type: RRDBNet
