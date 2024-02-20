@@ -42,7 +42,7 @@ poisson_scale_range2: [0.05, 2.5]
 gray_noise_prob2: 0.4
 jpeg_range2: [30, 95]
 
-gt_size: 200
+gt_size: 400
 queue_size: 180
 
 # dataset and data loader settings
@@ -74,14 +74,14 @@ datasets:
 
     final_sinc_prob: 0.8
 
-    gt_size: 200
+    gt_size: 400
     use_hflip: False # Horizontal Flip(Left-Right Flip)，即水平翻转
     use_rot: False
 
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 5
-    batch_size_per_gpu: 12
+    batch_size_per_gpu: 6
     dataset_enlarge_ratio: 100
     prefetch_mode: ~
 
@@ -115,6 +115,30 @@ datasets:
     type: PairedImageDataset
     dataroot_gt: datasets/motion01/val/rotate_trans_gt
     dataroot_lq: datasets/motion01/val/rotate_trans
+    io_backend:
+      type: disk
+
+  val_5:
+    name: real_motion01
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run01
+    dataroot_lq: datasets/motion01/real_motion/run01
+    io_backend:
+      type: disk
+
+  val_6:
+    name: real_motion02
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run02
+    dataroot_lq: datasets/motion01/real_motion/run02
+    io_backend:
+      type: disk
+
+  val_7:
+    name: real_motion03
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run03
+    dataroot_lq: datasets/motion01/real_motion/run03
     io_backend:
       type: disk
 
