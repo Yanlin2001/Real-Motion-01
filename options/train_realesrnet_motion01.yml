@@ -81,7 +81,7 @@ datasets:
     # data loader
     use_shuffle: true
     num_worker_per_gpu: 5
-    batch_size_per_gpu: 12
+    batch_size_per_gpu: 15
     dataset_enlarge_ratio: 100
     prefetch_mode: ~
 
