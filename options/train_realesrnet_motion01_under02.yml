@@ -9,7 +9,7 @@ gt_usm: True  # USM the ground-truth
 
 # Motion process
 rot90_prob: 1.0 # 旋转90度概率
-horizontal_mask_prob: 0.0
+horizontal_mask_prob: 1.0
 undersample_prob: 0.8 # 降采样概率
 center_fraction_range: [0.03, 0.08] # 中心部分采样范围
 acceleration_range: [2, 7] # 加速范围
