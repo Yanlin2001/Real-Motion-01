@@ -1,5 +1,5 @@
 # general settings
-name: 001_motion_brain_train_20240221_test02_onlymotion01
+name: 001_motion_brain_train_20240221_test02_onlymotion02
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -8,7 +8,7 @@ manual_seed: 0
 gt_usm: True  # USM the ground-truth
 
 # Motion process
-rot90_prob: 0.5 # 旋转90度概率
+rot90_prob: 1.0 # 旋转90度概率
 horizontal_mask_prob: 0.0
 undersample_prob: 0.0 # 降采样概率
 center_fraction_range: [0.03, 0.08] # 中心部分采样范围
