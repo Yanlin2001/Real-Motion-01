@@ -105,7 +105,7 @@ class RealESRNetModel(SRModel):
                 noisy_image = torch.sqrt((image + noise_real)**2 + noise_imaginary**2)
                 # 将像素值裁剪到 [0, 1] 范围内
                 # noisy_image = torch.clamp(noisy_image, 0, 1)
-                print("std:", std)
+                # print("std:", std)
                 return noisy_image
 
             def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
@@ -240,7 +240,6 @@ class RealESRNetModel(SRModel):
 
             if np.random.uniform(0, 1) < self.opt['rician_noise_prob']:
                 temp_reconstructed_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
-                # temp_reconstructed_image = torch.clamp((temp_reconstructed_image * 255.0).round(), 0, 255) / 255.
                 rician_std = np.random.uniform(self.opt['rician_noise_range'][0], self.opt['rician_noise_range'][1])
                 temp_rician_image = add_rician_noise(temp_reconstructed_image, std=rician_std)
                 K_data = torch.fft.fft2(temp_rician_image, dim=(-2, -1))
@@ -283,7 +282,7 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
-
+        '''
         import datetime
         import os
         import torchvision.transforms as transforms
@@ -313,7 +312,7 @@ class RealESRNetModel(SRModel):
             print(f"Image saved at: {save_path2}")
 
         print(f"All images saved in folder: {folder_path}")
-
+        '''
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
