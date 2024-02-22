@@ -9,7 +9,7 @@ gt_usm: True  # USM the ground-truth
 
 # Motion process
 rician_noise_prob: 1.0
-rician_noise_range: [0.05, 0.1]
+rician_noise_range: [0.005, 0.01]
 rot90_prob: 1.0 # 旋转90度概率
 horizontal_mask_prob: 0.0
 undersample_prob: 0.0 # 降采样概率
