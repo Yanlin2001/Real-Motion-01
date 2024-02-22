@@ -97,6 +97,17 @@ class RealESRNetModel(SRModel):
             width, height = self.gt.size()[-1], self.gt.size()[-2]
             # ----------------------- The first motion process ----------------------- #
 
+            def add_rician_noise(image, mean=0, std=25):
+                image = image.float()
+                # 生成高斯噪声并添加到图像上
+                noise_real  = torch.randn_like(image) * std + mean
+                noise_imaginary = torch.randn_like(image) * std + mean
+                noisy_image = torch.sqrt((image + noise_real)**2 + noise_imaginary**2)
+                # 将像素值裁剪到 [0, 1] 范围内
+                # noisy_image = torch.clamp(noisy_image, 0, 1)
+                print("std:", std)
+                return noisy_image
+
             def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
                 if len(center_fractions) != len(accelerations):
                     raise ValueError("Number of center fractions should match number of accelerations")
@@ -191,7 +202,6 @@ class RealESRNetModel(SRModel):
 
                 return out
 
-
             def kspace_scan(image_tensor, K_data, cur_round, tol_round):
                 # 将图像张量转换为K空间数据
                 k_space_data = torch.fft.fft2(image_tensor, dim=(-2, -1))
@@ -227,6 +237,13 @@ class RealESRNetModel(SRModel):
 
                     #out_image = center_crop(out_image, (400, 400))
                     K_data = kspace_scan(out_image, K_data, i, rounds)
+
+            if np.random.uniform(0, 1) < self.opt['rician_noise_prob']:
+                temp_reconstructed_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+                rician_std = np.random.uniform(self.opt['rician_noise_range'][0], self.opt['rician_noise_range'][1])
+                temp_rician_image = add_rician_noise(temp_reconstructed_image, std=rician_std)
+                K_data = torch.fft.fft2(temp_rician_image, dim=(-2, -1))
+                K_data = torch.fft.fftshift(K_data, dim=(-2, -1))
 
             if np.random.uniform(0, 1) < undersample_prob:
                 center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
@@ -265,7 +282,7 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
-    '''
+
         import datetime
         import os
         import torchvision.transforms as transforms
@@ -295,7 +312,7 @@ class RealESRNetModel(SRModel):
             print(f"Image saved at: {save_path2}")
 
         print(f"All images saved in folder: {folder_path}")
-    '''
+
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
