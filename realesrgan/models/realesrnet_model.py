@@ -240,6 +240,7 @@ class RealESRNetModel(SRModel):
 
             if np.random.uniform(0, 1) < self.opt['rician_noise_prob']:
                 temp_reconstructed_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+                temp_reconstructed_image = torch.clamp((temp_reconstructed_image * 255.0).round(), 0, 255) / 255.
                 rician_std = np.random.uniform(self.opt['rician_noise_range'][0], self.opt['rician_noise_range'][1])
                 temp_rician_image = add_rician_noise(temp_reconstructed_image, std=rician_std)
                 K_data = torch.fft.fft2(temp_rician_image, dim=(-2, -1))
