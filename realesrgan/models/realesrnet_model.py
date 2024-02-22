@@ -266,7 +266,7 @@ class RealESRNetModel(SRModel):
 
             # ----------------------- The first degradation process ----------------------- #
             # blur ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-            out = filter2D(self.gt_usm, self.kernel1)
+            out = filter2D(out, self.kernel1)
             # random resize
             updown_type = random.choices(['up', 'down', 'keep'], self.opt['resize_prob'])[0]
             if updown_type == 'up':
@@ -366,7 +366,7 @@ class RealESRNetModel(SRModel):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
-        '''
+
         import datetime
         import os
         import torchvision.transforms as transforms
@@ -396,7 +396,7 @@ class RealESRNetModel(SRModel):
             print(f"Image saved at: {save_path2}")
 
         print(f"All images saved in folder: {folder_path}")
-        '''
+
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False

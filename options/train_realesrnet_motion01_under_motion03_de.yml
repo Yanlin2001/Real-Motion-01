@@ -1,5 +1,5 @@
 # general settings
-name: 001_motion_brain_train_20240221_test02_underwmotion0&noise
+name: 001_motion_brain_train_20240221_test02_underwmotion0&noise+de
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
