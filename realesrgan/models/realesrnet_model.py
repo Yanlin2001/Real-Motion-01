@@ -71,15 +71,18 @@ class RealESRNetModel(SRModel):
     def feed_data(self, data):
         """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         """
-        # 有空嵌入下面的代码
-        rot90_prob= self.opt['rot90_prob'] # 旋转90概率
-        undersample_prob= self.opt['undersample_prob'] # 采样概率
-        center_fraction_range= self.opt['center_fraction_range'] # 中心分数范围
-        acceleration_range= self.opt['acceleration_range'] # 加速度范围
-        horizontal_mask_prob = self.opt['horizontal_mask_prob'] # 水平mask概率
+
 
         if self.is_train and self.opt.get('high_order_degradation', True):
             # training data synthesis
+
+            # 有空嵌入下面的代码
+            rot90_prob= self.opt['rot90_prob'] # 旋转90概率
+            undersample_prob= self.opt['undersample_prob'] # 采样概率
+            center_fraction_range= self.opt['center_fraction_range'] # 中心分数范围
+            acceleration_range= self.opt['acceleration_range'] # 加速度范围
+            horizontal_mask_prob = self.opt['horizontal_mask_prob'] # 水平mask概率
+
             self.gt = data['gt'].to(self.device)
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
