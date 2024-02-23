@@ -6,34 +6,40 @@ manual_seed: 0
 
 datasets:
   test_1:  # the 1st test dataset
-    name: gt320
+    name: inter-scan_motion90
     type: PairedImageDataset
-    dataroot_gt: datasets/motion01/val/gt320_gt
-    dataroot_lq: datasets/motion01/val/gt320
+    dataroot_gt: datasets/motion01/m4raw/inter-scan_motion90
+    dataroot_lq: datasets\motion01/m4raw/inter-scan_motion90
     io_backend:
       type: disk
   test_2:  # the 2nd test dataset
-    name: hard
+    name: inter-scan_motion_under90
     type: PairedImageDataset
-    dataroot_gt: datasets/motion01/val/hard_gt
-    dataroot_lq: datasets/motion01/val/hard
+    dataroot_gt: datasets/motion01/m4raw/inter-scan_motion_under90
+    dataroot_lq: datasets/motion01/m4raw/inter-scan_motion_under90
     io_backend:
       type: disk
   test_3:
-    name: mid
+    name: intra-scan_motion90
     type: PairedImageDataset
-    dataroot_gt: datasets/motion01/val/mid_gt
-    dataroot_lq: datasets/motion01/val/mid
+    dataroot_gt: datasets/motion01/m4raw/intra-scan_motion90
+    dataroot_lq: datasets/motion01/m4raw/intra-scan_motion90
     io_backend:
       type: disk
   test_4:
-    name: rotate_trans
+    name: intra-scan_motion_under90
     type: PairedImageDataset
-    dataroot_gt: datasets/motion01/val/rotate_trans_gt
-    dataroot_lq: datasets/motion01/val/rotate_trans
+    dataroot_gt: datasets/motion01/m4raw/intra-scan_motion_under90
+    dataroot_lq: datasets/motion01/m4raw/intra-scan_motion_under90
     io_backend:
       type: disk
-
+  test_5:
+    name: real_motion02_under
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/real_motion/run02_under
+    dataroot_lq: datasets/motion01/real_motion/run02_under
+    io_backend:
+      type: disk
 # network structures
 network_g:
   type: RRDBNet
