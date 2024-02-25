@@ -6,10 +6,18 @@ manual_seed: 0
 
 datasets:
   test_1:  # the 1st test dataset
-    name: inter-scan_motion90
+    name: abd_rot90
     type: PairedImageDataset
-    dataroot_gt: datasets/motion01/rot90
-    dataroot_lq: datasets/motion01/rot90
+    dataroot_gt: datasets/motion01/abd_rot90
+    dataroot_lq: datasets/motion01/abd_rot90
+    io_backend:
+      type: disk
+
+  test_2:  # the 2nd test dataset
+    name: abd_padded
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion01/abd_padded
+    dataroot_lq: datasets/motion01/abd_padded
     io_backend:
       type: disk
 
