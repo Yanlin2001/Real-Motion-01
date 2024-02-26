@@ -1,5 +1,5 @@
 # general settings
-name: X0226_realesrnet_motion02_un_motion_abd
+name: X0226_realesrnet_motion02_un_mo_noise_abd
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -9,8 +9,8 @@ gt_usm: True  # USM the ground-truth
 
 # Motion process
 equal_mask: True
-rician_noise_prob: 0.0
-rician_noise_range: [0.0001, 0.0002]
+rician_noise_prob: 0.8
+rician_noise_range: [0.005, 0.05]
 rot90_prob: 0.0 # 旋转90度概率
 horizontal_mask_prob: 0.0
 undersample_prob: 0.9 # 降采样概率
