@@ -289,7 +289,7 @@ class RealESRNetModel(SRModel):
 
             # random crop
             gt_size = self.opt['gt_size']
-            self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
+            # self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
             # training pair pool
             self._dequeue_and_enqueue()
