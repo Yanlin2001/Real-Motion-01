@@ -148,7 +148,7 @@ class RealESRNetModel(SRModel):
                 # print("Generated Alternating Mask:")
                 # print(mask)
                 true_count = int(mask.sum())
-                print(f"Number of True values in the mask: {true_count}")
+                #print(f"Number of True values in the mask: {true_count}")
 
                 return mask
 
@@ -163,7 +163,7 @@ class RealESRNetModel(SRModel):
                 # print("Generated Alternating Mask:")
                 # print(mask)
                 true_count = int(mask.sum())
-                print(f"Number of True values in the mask: {true_count}")
+                #print(f"Number of True values in the mask: {true_count}")
 
                 return mask
 
