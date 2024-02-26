@@ -152,6 +152,18 @@ class RealESRNetModel(SRModel):
 
                 return mask
 
+            def generate_equal_mask_new(num_rows: int) -> torch.Tensor:
+                # Create an alternating True/False mask along rows
+                mask = torch.arange(num_rows) % 2 == 0
+
+                mask_shape = [1, num_rows] + [1] * (len(mask.shape) - 1)
+                mask = mask.view(*mask_shape).float()
+
+                # print("Generated Alternating Mask:")
+                # print(mask)
+                true_count = int(mask.sum())
+                print(f"Number of True values in the mask: {true_count}")
+
             def random_motion_transform(image, width, height,
                             rotate_prob = 0.5, rotate_range = [-5, 5],
                             translation_prob = [0.2, 0.2, 0.6], translation_range = [-0.1, 0.1],
@@ -263,7 +275,7 @@ class RealESRNetModel(SRModel):
 
             if np.random.uniform(0, 1) < undersample_prob:
                 if self.opt['equal_mask'] is True:
-                    mask = generate_equal_mask(K_data.shape[-1])
+                    mask = generate_equal_mask_new(K_data.shape[-2])
                     mask = mask.to(self.device)
                 else:
                     center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
