@@ -1,5 +1,5 @@
 # general settings
-name: X0226_realesrnet_motion02_noise
+name: X0226_realesrnet_motion02_noise_abd
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
