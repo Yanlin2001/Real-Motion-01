@@ -1,4 +1,4 @@
-name: C0226_realesrnet_motion02_motion_1
+name: C0226_realesrnet_motion02_motion_A1
 model_type: RealESRNetModel
 scale: 1
 num_gpu: 1  # set num_gpu: 0 for cpu mode
