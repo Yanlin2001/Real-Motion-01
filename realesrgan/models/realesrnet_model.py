@@ -137,36 +137,6 @@ class RealESRNetModel(SRModel):
 
                 return mask
 
-            def generate_equal_mask_column(num_cols: int) -> torch.Tensor:
-                # Create an alternating True/False mask
-                mask = torch.arange(num_cols) % 2 == 0
-
-                mask_shape = [1, 1] + [1] * (len(mask.shape) - 2)
-                mask_shape[-2] = num_cols
-                mask = mask.view(*mask_shape).float()
-
-                # print("Generated Alternating Mask:")
-                # print(mask)
-                true_count = int(mask.sum())
-                #print(f"Number of True values in the mask: {true_count}")
-
-                return mask
-
-            def generate_equal_mask_row(num_rows: int) -> torch.Tensor:
-                # Create an alternating True/False mask along the rows
-                mask = torch.arange(num_rows) % 2 == 0
-
-                mask_shape = [1] + [1] * (len(mask.shape))
-                mask_shape[-1] = num_rows
-                mask = mask.view(*mask_shape).float()
-
-                # print("Generated Alternating Mask:")
-                # print(mask)
-                true_count = int(mask.sum())
-                #print(f"Number of True values in the mask: {true_count}")
-
-                return mask
-
             def random_motion_transform(image, width, height,
                             rotate_prob = 0.5, rotate_range = [-5, 5],
                             translation_prob = [0.2, 0.2, 0.6], translation_range = [-0.1, 0.1],
@@ -277,15 +247,11 @@ class RealESRNetModel(SRModel):
                 K_data = torch.fft.fftshift(K_data, dim=(-2, -1))
 
             if np.random.uniform(0, 1) < undersample_prob:
-                if self.opt['equal_mask'] is True:
-                    mask = generate_equal_mask_row(K_data.shape[-2])
-                    mask = mask.to(self.device)
-                else:
-                    center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
-                    acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
-                    mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
-                    # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}", K_data.shape[-1])
-                    mask = mask.to(self.device)
+                center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
+                acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
+                mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
+                # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}", K_data.shape[-1])
+                mask = mask.to(self.device)
                 if np.random.uniform(0, 1) > horizontal_mask_prob:
                     mask = mask.t()
                 K_data = K_data * mask
@@ -304,7 +270,7 @@ class RealESRNetModel(SRModel):
 
             # random crop
             gt_size = self.opt['gt_size']
-            # self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
+            self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
             # training pair pool
             self._dequeue_and_enqueue()
