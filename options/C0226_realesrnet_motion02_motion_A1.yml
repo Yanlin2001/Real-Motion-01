@@ -6,18 +6,18 @@ manual_seed: 0
 
 datasets:
   test_1:  # the 1st test dataset
-    name: brain_test_under_noise
+    name: brain_test_under_motion
     type: PairedImageDataset
-    dataroot_gt: /kaggle/working/Real-Motion-01/results/C0226_realesrnet_motion02_undersample_1/visualization/brain_test_under
-    dataroot_lq: /kaggle/working/Real-Motion-01/results/C0226_realesrnet_motion02_undersample_1/visualization/brain_test_under
+    dataroot_gt: /kaggle/working/Real-Motion-01/datasets/motion01/brain_test_under
+    dataroot_lq: /kaggle/working/Real-Motion-01/datasets/motion01/brain_test_under
     io_backend:
       type: disk
 
   test_2:  # the 2nd test dataset
     name: brain_test_under_noise_motion
     type: PairedImageDataset
-    dataroot_gt: /kaggle/working/Real-Motion-01/results/C0226_realesrnet_motion02_noise_1/visualization/brain_test_under_noise
-    dataroot_lq: /kaggle/working/Real-Motion-01/results/C0226_realesrnet_motion02_noise_1/visualization/brain_test_under_noise
+    dataroot_gt: /kaggle/working/Real-Motion-01/results/C0226_realesrnet_motion02_noise_A1/visualization/brain_test_under_noise
+    dataroot_lq: /kaggle/working/Real-Motion-01/results/C0226_realesrnet_motion02_noise_A1/visualization/brain_test_under_noise
     io_backend:
       type: disk
 
