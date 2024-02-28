@@ -65,7 +65,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: /kaggle/input/test0226/undersample.pth
+  pretrain_network_g: /kaggle/input/test1000/net_g_10000.pth
   strict_load_g: true
 
 # validation settings
@@ -82,3 +82,4 @@ val:
       type: calculate_ssim
       crop_border: 4
       test_y_channel: false
+    perceptualLoss:
