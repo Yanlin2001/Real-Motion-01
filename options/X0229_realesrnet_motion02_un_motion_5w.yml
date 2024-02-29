@@ -109,7 +109,7 @@ network_g:
 # path
 path:
   #pretrain_network_g: experiments/pretrained_models/ESRGAN_SRx4_DF2KOST_official-ff704c30.pth / /kaggle/input/net-g-40000-b2024/net_g_40000_b2024.pth
-  pretrain_network_g: /kaggle/input/test0229/un_motion.pth
+  pretrain_network_g: /kaggle/input/test022901/un_motion.pth
   param_key_g: params_ema
   strict_load_g: true
   resume_state: ~
