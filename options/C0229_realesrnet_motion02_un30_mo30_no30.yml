@@ -54,10 +54,10 @@ datasets:
       type: disk
 
   test_7:  # the 7th test dataset
-    name: rot90
+    name: rot90full
     type: PairedImageDataset
-    dataroot_gt: datasets/motion01/rot90
-    dataroot_lq: datasets/motion01/rot90
+    dataroot_gt: datasets/motion01/rot90_full
+    dataroot_lq: datasets/motion01/rot90_full
     io_backend:
       type: disk
 
