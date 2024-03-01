@@ -45,7 +45,7 @@ gray_noise_prob2: 0.4
 jpeg_range2: [70, 95]
 
 gt_size: 200
-queue_size: 192
+queue_size: 128
 
 # dataset and data loader settings
 datasets:
