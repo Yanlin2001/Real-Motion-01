@@ -11,11 +11,11 @@ from basicsr.utils.registry import MODEL_REGISTRY
 from basicsr.models.base_model import BaseModel
 
 @MODEL_REGISTRY.register()
-class SRModel(BaseModel):
+class SRModel_fft(BaseModel):
     """Base SR model for single image super-resolution."""
 
     def __init__(self, opt):
-        super(SRModel, self).__init__(opt)
+        super(SRModel_fft, self).__init__(opt)
 
         # define network
         self.net_g = build_network(opt['network_g'])

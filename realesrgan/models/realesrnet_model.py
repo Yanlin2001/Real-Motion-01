@@ -3,7 +3,7 @@ import random
 import torch
 from basicsr.data.degradations import random_add_gaussian_noise_pt, random_add_poisson_noise_pt
 from basicsr.data.transforms import paired_random_crop
-from basicsrse.models.sr_model import SRModel
+from basicsrse.models.sr_model import SRModel_fft
 from basicsr.utils import DiffJPEG, USMSharp
 from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
@@ -15,7 +15,7 @@ from torchvision.transforms.functional import InterpolationMode
 from typing import Sequence, Optional, Union, Tuple
 
 @MODEL_REGISTRY.register()
-class RealESRNetModel(SRModel):
+class RealESRNetModel(SRModel_fft):
     """RealESRNet Model for Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data.
 
     It is trained without GAN losses.
