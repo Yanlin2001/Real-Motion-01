@@ -132,14 +132,15 @@ train:
   warmup_iter: -1  # no warm up
 
   # losses
-  #pixel_opt:
-  #  type: L1Loss
-  #  loss_weight: 1.0
-  #  reduction: mean
-
-  pixel_opt2:
-    type: FocalFrequencyLoss
+  pixel_opt:
+    type: L1Loss
     loss_weight: 1.0
+    reduction: mean
+
+  fft_opt:
+    type: FFTLoss
+    loss_weight: 1.0
+    reduction: mean
 
 # Uncomment these for validation
 # validation settings
