@@ -133,11 +133,11 @@ train:
 
   # losses
   #pixel_opt:
-   # type: L1Loss
-    #loss_weight: 1.0
-    #reduction: mean
+  #  type: L1Loss
+  #  loss_weight: 1.0
+  #  reduction: mean
 
-  pixel_opt:
+  pixel_opt2:
     type: FocalFrequencyLoss
     loss_weight: 1.0
 
