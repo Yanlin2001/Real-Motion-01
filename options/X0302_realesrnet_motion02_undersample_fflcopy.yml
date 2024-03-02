@@ -137,7 +137,7 @@ train:
     #loss_weight: 1.0
     #reduction: mean
 
-  perceptual_opt:
+  pixel_opt:
     type: FocalFrequencyLoss
     loss_weight: 1.0
 
