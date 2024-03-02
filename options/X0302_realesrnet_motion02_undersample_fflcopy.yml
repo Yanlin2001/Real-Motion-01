@@ -140,7 +140,6 @@ train:
   perceptual_opt:
     type: FocalFrequencyLoss
     loss_weight: 1.0
-    reduction: mean
 
 # Uncomment these for validation
 # validation settings
