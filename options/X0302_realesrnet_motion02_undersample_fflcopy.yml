@@ -138,7 +138,7 @@ train:
     #reduction: mean
 
   perceptual_opt:
-    type: FFTLoss
+    type: FocalFrequencyLoss
     loss_weight: 1.0
     reduction: mean
 
