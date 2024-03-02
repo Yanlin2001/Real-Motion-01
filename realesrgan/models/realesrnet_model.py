@@ -281,7 +281,7 @@ class RealESRNetModel(SRModel_fft):
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt_usm = self.usm_sharpener(self.gt)
-        '''
+
         import datetime
         import os
         import torchvision.transforms as transforms
@@ -311,7 +311,7 @@ class RealESRNetModel(SRModel_fft):
             print(f"Image saved at: {save_path2}")
 
         print(f"All images saved in folder: {folder_path}")
-        '''
+
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
