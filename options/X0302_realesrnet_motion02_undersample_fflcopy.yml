@@ -132,7 +132,12 @@ train:
   warmup_iter: -1  # no warm up
 
   # losses
-  FFT_opt:
+  #pixel_opt:
+   # type: L1Loss
+    #loss_weight: 1.0
+    #reduction: mean
+
+  perceptual_opt:
     type: FFTLoss
     loss_weight: 1.0
     reduction: mean
