@@ -83,7 +83,7 @@ class RealESRGANModel(SRGANModel):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
             # USM sharpen the GT images
-            if self.opt['gt_usm'] is True:
+            if self.opt['gan_gt_usm'] is True:
                 self.gt = self.usm_sharpener(self.gt)
             # rotate 90
             if np.random.uniform(0, 1) < rot90_prob:
