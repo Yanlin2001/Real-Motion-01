@@ -228,7 +228,7 @@ class RealESRNetModel(SRModel_fft):
             K_data = torch.from_numpy(K_data).to(self.device)
 
             for i in range(rounds):
-                if i == rounds//2:
+                if i > rounds * (5/11) and i < rounds * (6/11):
                     K_data = kspace_scan(L_gt, K_data, i, rounds)
                 else:
                     out_image = random_motion_transform(L_gt, width, height, rotate_prob=self.opt['rotate_prob'], rotate_range=self.opt['rotate_range'], translation_prob=self.opt['translation_prob'], translation_range=self.opt['translation_range'], perspective_prob=self.opt['perspective_prob'], perspective_range=self.opt['perspective_range'], stretch_prob=self.opt['stretch_prob'], stretch_range=self.opt['stretch_range'])
