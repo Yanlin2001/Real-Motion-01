@@ -93,7 +93,7 @@ class RealESRNetModel(SRModel_fft):
             self.kernel1 = data['kernel1'].to(self.device)
             self.kernel2 = data['kernel2'].to(self.device)
             self.sinc_kernel = data['sinc_kernel'].to(self.device)
-            print('gt', self.gt.size())
+            #print('gt', self.gt.size())
             ori_h, ori_w = self.gt.size()[2:4]
 
             width, height = self.gt.size()[-1], self.gt.size()[-2]
@@ -263,7 +263,7 @@ class RealESRNetModel(SRModel_fft):
 
             # 增加通道数
             out = out.repeat(1, 3, 1, 1)
-            print('out', out.size())
+            #print('out', out.size())
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
 
