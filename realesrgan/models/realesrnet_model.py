@@ -13,6 +13,7 @@ from torchvision.transforms.functional import perspective as perspective_transfo
 from torchvision.transforms.functional import rotate, resize, center_crop
 from torchvision.transforms.functional import InterpolationMode
 from typing import Sequence, Optional, Union, Tuple
+from realesrgan.archs.unet import Unet
 
 @MODEL_REGISTRY.register()
 class RealESRNetModel(SRModel_fft):
