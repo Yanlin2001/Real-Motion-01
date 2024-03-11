@@ -1,5 +1,5 @@
 # general settings
-name: X0305_realesrnet_motion03_undersample
+name: A0311_realesrnet_motion03_undersample
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -98,13 +98,12 @@ datasets:
 
 # network structures
 network_g:
-  type: RRDBNet
-  num_in_ch: 3
-  num_out_ch: 3
-  num_feat: 64
-  num_block: 23
-  num_grow_ch: 32
-  scale: 1
+  type: Unet
+  num_in_ch: 3 # ✓
+  num_out_ch: 3 # ✓
+  chans: 32
+  num_pool_layers: 4
+  drop_prob: 0.0
 
 # path
 path:
