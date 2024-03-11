@@ -1,31 +1,19 @@
 import numpy as np
-import random
 import torch
-from basicsr.data.degradations import random_add_gaussian_noise_pt, random_add_poisson_noise_pt
 from basicsr.data.transforms import paired_random_crop
 from basicsrse.models.sr_model import SRModel_fft
 from basicsr.utils import DiffJPEG, USMSharp
-from basicsr.utils.img_process_util import filter2D
 from basicsr.utils.registry import MODEL_REGISTRY
-from torch.nn import functional as F
 import torch
 from torchvision.transforms.functional import perspective as perspective_transform
-from torchvision.transforms.functional import rotate, resize, center_crop
-from torchvision.transforms.functional import InterpolationMode
+from torchvision.transforms.functional import InterpolationMode, rotate
 from typing import Sequence, Optional, Union, Tuple
 
 @MODEL_REGISTRY.register()
-class RealESRNetModel(SRModel_fft):
-    """RealESRNet Model for Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data.
-
-    It is trained without GAN losses.
-    It mainly performs:
-    1. randomly synthesize LQ images in GPU tensors
-    2. optimize the networks with GAN training.
-    """
+class RealUNetModel(SRModel_fft):
 
     def __init__(self, opt):
-        super(RealESRNetModel, self).__init__(opt)
+        super(RealUNetModel, self).__init__(opt)
         self.jpeger = DiffJPEG(differentiable=False).cuda()  # simulate JPEG compression artifacts
         self.usm_sharpener = USMSharp().cuda()  # do usm sharpening
         self.queue_size = opt.get('queue_size', 180)
@@ -71,8 +59,6 @@ class RealESRNetModel(SRModel_fft):
     def feed_data(self, data):
         """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         """
-
-
         if self.is_train and self.opt.get('high_order_degradation', True):
             # 有空嵌入下面的代码
             rot90_prob= self.opt['rot90_prob'] # 旋转90概率
@@ -315,5 +301,5 @@ class RealESRNetModel(SRModel_fft):
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
-        super(RealESRNetModel, self).nondist_validation(dataloader, current_iter, tb_logger, save_img)
+        super(RealUNetModel, self).nondist_validation(dataloader, current_iter, tb_logger, save_img)
         self.is_train = True
