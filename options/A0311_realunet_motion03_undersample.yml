@@ -1,5 +1,5 @@
 # general settings
-name: A0311_realesrnet_motion03_undersample
+name: A0311_realunet_motion03_undersample
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
