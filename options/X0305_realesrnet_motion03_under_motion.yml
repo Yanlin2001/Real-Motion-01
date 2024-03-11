@@ -20,10 +20,10 @@ rotate_prob: 0.5 # 旋转概率
 rotate_range: [-2, 2] # 旋转角度范围
 translation_prob: [0.2, 0.2, 0.6] # un-down, left-right, keep
 translation_range: [-0.01, 0.01]  # 平移范围
-perspective_prob: [0.2, 0.2, 0.6]  # un-down, left-right, keep
-perspective_range: [-0.01, 0.01] # 透视范围
-stretch_prob: 0.2 # 伸缩概率
-stretch_range: [-0.01, 0.01] # 伸缩范围
+perspective_prob: [0.0, 0.0, 1.0]  # un-down, left-right, keep
+perspective_range: [-0.001, 0.001] # 透视范围
+stretch_prob: 0.0 # 伸缩概率
+stretch_range: [-0.001, 0.001] # 伸缩范围
 
 # the first degradation process
 resize_prob: [0.1, 0.1, 0.8]  # up, down, keep

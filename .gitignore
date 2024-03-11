@@ -5,7 +5,7 @@ tb_logger/*
 wandb/*
 tmp/*
 weights/*
-
+local_test/*
 version.py
 
 # Byte-compiled / optimized / DLL files

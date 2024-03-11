@@ -89,7 +89,7 @@ datasets:
 
   # Uncomment these for validation
   val:
-    name: run02_motion
+    name: run02_acc4
     type: PairedImageDataset
     dataroot_gt: datasets/motion01/run02/gt
     dataroot_lq: datasets/motion01/run02/acc4
