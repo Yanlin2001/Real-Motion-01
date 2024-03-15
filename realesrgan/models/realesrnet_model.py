@@ -294,8 +294,13 @@ class RealESRNetModel(SRModel_fft):
         else:
             # for paired training or validation
             self.lq = data['lq'].to(self.device)
+            self.lq = self.lq[:, 0, :, :]  # only use the Y channel
+            self.lq = self.lq.unsqueeze(1)  # add channel dim
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
+                self.gt = self.gt[:, 0, :, :]  # only use the Y channel
+                self.gt = self.gt.unsqueeze(1)  # add channel dim
+                print(self.gt.size())
                 self.gt_usm = self.usm_sharpener(self.gt)
         '''
         import datetime
