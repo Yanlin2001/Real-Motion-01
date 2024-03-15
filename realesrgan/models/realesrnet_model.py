@@ -259,6 +259,7 @@ class RealESRNetModel(SRModel_fft):
                 self.mask = mask # 保存mask
                 self.nmask = torch.logical_not(mask)
                 K_data = K_data * mask
+                self.under_kdata = K_data
                 self.undersampled = True # 记录是否欠采
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
