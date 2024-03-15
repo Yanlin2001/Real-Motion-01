@@ -263,7 +263,7 @@ class RealESRNetModel(SRModel_fft):
                 # 增加通道维度
                 self.under_kdata = torch.unsqueeze(self.under_kdata, dim=1)
                 # 增加通道数
-                self.under_kdata = self.under_kdata.repeat(1, 3, 1, 1)
+                #self.under_kdata = self.under_kdata.repeat(1, 3, 1, 1)
                 self.undersampled = True # 记录是否欠采
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
@@ -272,7 +272,7 @@ class RealESRNetModel(SRModel_fft):
             out = torch.unsqueeze(out, dim=1)
 
             # 增加通道数
-            out = out.repeat(1, 3, 1, 1)
+            #out = out.repeat(1, 3, 1, 1)
 
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
