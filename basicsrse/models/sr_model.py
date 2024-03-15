@@ -96,6 +96,45 @@ class SRModel_fft(BaseModel):
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq)
+
+        if self.undersampled == True:
+            self.full_kdata = torch.fft.fft2(self.output, dim=(-2, -1))
+            self.full_kdata = torch.fft.fftshift(self.full_kdata, dim=(-2, -1))
+            self.fill_kdata = self.full_kdata * self.nmask
+            self.full_kdata2 = self.under_kdata + self.fill_kdata
+            self.output = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(self.full_kdata2, dim=(-2, -1)), dim=(-2, -1)))
+            under_kdata_image = torch.log(torch.abs(self.under_kdata) + 1e-9)
+            fill_kdata_image = torch.log(torch.abs(self.fill_kdata) + 1e-9)
+            import datetime
+            import os
+            import torchvision.transforms as transforms
+
+            # Assuming self.lq and self.gt are PyTorch tensors with shape (batch_size, channels, height, width)
+            batch_size = self.lq.size(0)
+
+            # Get current time
+            current_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+            # Create a folder to save images
+            folder_path = f"/kaggle/working/images_{current_time}"
+            os.makedirs(folder_path, exist_ok=True)
+
+            for sample_index in range(batch_size):
+                # Convert to PIL Image
+                under_image = transforms.ToPILImage()(under_kdata_image[sample_index].cpu())
+                fill_image = transforms.ToPILImage()(fill_kdata_image[sample_index].cpu())
+
+                # Save image with current time and index as filename
+                save_path = os.path.join(folder_path, f"lq_image_{current_time}_{sample_index}.png")
+                save_path2 = os.path.join(folder_path, f"gt_image_{current_time}_{sample_index}.png")
+                under_image.save(save_path)
+                fill_image.save(save_path2)
+
+                print(f"Image saved at: {save_path}")
+                print(f"Image saved at: {save_path2}")
+
+            print(f"All images saved in folder: {folder_path}")
+
         print('optimize_parameters')
         print('self.output', self.output.shape)
         print('self.nmask', self.nmask.shape)
