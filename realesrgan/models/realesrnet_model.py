@@ -72,8 +72,6 @@ class RealESRNetModel(SRModel_fft):
     def feed_data(self, data):
         """Accept data from dataloader, and then add two-order degradations to obtain LQ images.
         """
-
-
         if self.is_train and self.opt.get('high_order_degradation', True):
             # 有空嵌入下面的代码
             rot90_prob= self.opt['rot90_prob'] # 旋转90概率
@@ -93,7 +91,7 @@ class RealESRNetModel(SRModel_fft):
             self.kernel1 = data['kernel1'].to(self.device)
             self.kernel2 = data['kernel2'].to(self.device)
             self.sinc_kernel = data['sinc_kernel'].to(self.device)
-            #print('gt', self.gt.size())
+
             ori_h, ori_w = self.gt.size()[2:4]
 
             width, height = self.gt.size()[-1], self.gt.size()[-2]
@@ -241,8 +239,13 @@ class RealESRNetModel(SRModel_fft):
                 temp_reconstructed_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
                 rician_std = np.random.uniform(self.opt['rician_noise_range'][0], self.opt['rician_noise_range'][1])
                 temp_rician_image = add_rician_noise(temp_reconstructed_image, std=rician_std)
+
+                """ ↑ full image ↑ """
+
                 K_data = torch.fft.fft2(temp_rician_image, dim=(-2, -1))
                 K_data = torch.fft.fftshift(K_data, dim=(-2, -1))
+
+            self.undersampled = False
 
             if np.random.uniform(0, 1) < undersample_prob:
                 # center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
@@ -253,19 +256,23 @@ class RealESRNetModel(SRModel_fft):
                 mask = mask.to(self.device)
                 if np.random.uniform(0, 1) > horizontal_mask_prob:
                     mask = mask.t()
+                self.mask = mask # 保存mask
+                self.nmask = torch.logical_not(mask)
                 K_data = K_data * mask
+                self.undersampled = True # 记录是否欠采
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
-
 
             # 增加通道维度
             out = torch.unsqueeze(out, dim=1)
 
             # 增加通道数
             out = out.repeat(1, 3, 1, 1)
-            #print('out', out.size())
+
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
+
+            """ ↑ under image ↑ """
 
             # random crop
             gt_size = self.opt['gt_size']
