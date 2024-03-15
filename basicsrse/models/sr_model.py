@@ -96,7 +96,7 @@ class SRModel_fft(BaseModel):
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq)
-        '''
+
         if self.undersampled == True:
             self.full_kdata = torch.fft.fft2(self.output, dim=(-2, -1))
             #print('self.full_kdata', self.full_kdata.shape)
@@ -109,7 +109,7 @@ class SRModel_fft(BaseModel):
             self.output = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(self.full_kdata2, dim=(-2, -1)), dim=(-2, -1)))
             under_kdata_image = torch.log(torch.abs(self.under_kdata) + 1e-9)
             fill_kdata_image = torch.log(torch.abs(self.fill_kdata) + 1e-9)
-
+            '''
             import datetime
             import os
             import torchvision.transforms as transforms
@@ -139,7 +139,7 @@ class SRModel_fft(BaseModel):
                 print(f"Image saved at: {save_path2}")
 
             print(f"All images saved in folder: {folder_path}")
-        '''
+            '''
         #print('optimize_parameters')
         #print('self.output', self.output.shape)
         #print('self.nmask', self.nmask.shape)
