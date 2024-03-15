@@ -81,6 +81,7 @@ class RealESRNetModel(SRModel_fft):
             horizontal_mask_prob = self.opt['horizontal_mask_prob'] # 水平mask概率
             # training data synthesis
             self.gt = data['gt'].to(self.device)
+            self.gt = self.gt[:, 0, :, :]  # only use the Y channel
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
                 self.gt = self.usm_sharpener(self.gt)
