@@ -126,7 +126,7 @@ class SRModel_fft(BaseModel):
             for sample_index in range(batch_size):
                 # Convert to PIL Image
                 under_image = transforms.ToPILImage()(under_kdata_image[sample_index].cpu())
-                fill_image = transforms.ToPILImage()(fill_kdata_image[sample_index].cpu())
+                fill_image = transforms.ToPILImage()(full_kdata_image[sample_index].cpu())
 
                 # Save image with current time and index as filename
                 save_path = os.path.join(folder_path, f"lq_image_{current_time}_{sample_index}.png")
