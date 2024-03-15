@@ -82,6 +82,7 @@ class RealESRNetModel(SRModel_fft):
             # training data synthesis
             self.gt = data['gt'].to(self.device)
             self.gt = self.gt[:, 0, :, :]  # only use the Y channel
+            print(self.gt.size())
             # USM sharpen the GT images
             if self.opt['gt_usm'] is True:
                 self.gt = self.usm_sharpener(self.gt)
