@@ -98,6 +98,7 @@ class SRModel_fft(BaseModel):
         self.output = self.net_g(self.lq)
         print('optimize_parameters')
         print('self.output', self.output.shape)
+        print('self.nmask', self.nmask.shape)
 
         l_total = 0
         loss_dict = OrderedDict()
