@@ -260,6 +260,10 @@ class RealESRNetModel(SRModel_fft):
                 self.nmask = torch.logical_not(mask)
                 K_data = K_data * mask
                 self.under_kdata = K_data
+                # 增加通道维度
+                self.under_kdata = torch.unsqueeze(self.under_kdata, dim=1)
+                # 增加通道数
+                self.under_kdata = self.under_kdata.repeat(1, 3, 1, 1)
                 self.undersampled = True # 记录是否欠采
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
