@@ -99,13 +99,13 @@ class SRModel_fft(BaseModel):
 
         if self.undersampled == True:
             self.full_kdata = torch.fft.fft2(self.output, dim=(-2, -1))
-            print('self.full_kdata', self.full_kdata.shape)
+            #print('self.full_kdata', self.full_kdata.shape)
             self.full_kdata = torch.fft.fftshift(self.full_kdata, dim=(-2, -1))
             self.fill_kdata = self.full_kdata * self.nmask
-            print('self.fill_kdata', self.fill_kdata.shape)
-            print('self.under_kdata', self.under_kdata.shape)
-            #self.full_kdata2 = self.under_kdata + self.fill_kdata
-            #self.output = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(self.full_kdata2, dim=(-2, -1)), dim=(-2, -1)))
+            #print('self.fill_kdata', self.fill_kdata.shape)
+            #print('self.under_kdata', self.under_kdata.shape)
+            self.full_kdata2 = self.under_kdata + self.fill_kdata
+            self.output = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(self.full_kdata2, dim=(-2, -1)), dim=(-2, -1)))
             under_kdata_image = torch.log(torch.abs(self.under_kdata) + 1e-9)
             fill_kdata_image = torch.log(torch.abs(self.fill_kdata) + 1e-9)
             '''
