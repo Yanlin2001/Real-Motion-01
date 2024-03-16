@@ -96,7 +96,7 @@ class SRModel_fft(BaseModel):
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq)
-
+        self.raw_output = self.output
         if self.undersampled == True:
             self.full_kdata = torch.fft.fft2(self.output, dim=(-2, -1))
             #print('self.full_kdata', self.full_kdata.shape)
@@ -109,7 +109,7 @@ class SRModel_fft(BaseModel):
             self.output = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(self.full_kdata2, dim=(-2, -1)), dim=(-2, -1)))
             under_kdata_image = torch.log(torch.abs(self.under_kdata) + 1e-9)
             fill_kdata_image = torch.log(torch.abs(self.fill_kdata) + 1e-9)
-            '''
+
             import datetime
             import os
             import torchvision.transforms as transforms
@@ -130,16 +130,16 @@ class SRModel_fft(BaseModel):
                 fill_image = transforms.ToPILImage()(full_kdata2_image[sample_index].cpu())
 
                 # Save image with current time and index as filename
-                save_path = os.path.join(folder_path, f"lq_image_{current_time}_{sample_index}.png")
-                save_path2 = os.path.join(folder_path, f"gt_image_{current_time}_{sample_index}.png")
-                under_image.save(save_path)
-                fill_image.save(save_path2)
+                save_path = os.path.join(folder_path, f"fill_image_{current_time}_{sample_index}.png")
+                save_path2 = os.path.join(folder_path, f"raw_image_{current_time}_{sample_index}.png")
+                self.output.save(save_path)
+                self.raw_output.save(save_path2)
 
                 print(f"Image saved at: {save_path}")
                 print(f"Image saved at: {save_path2}")
 
             print(f"All images saved in folder: {folder_path}")
-            '''
+
         #print('optimize_parameters')
         #print('self.output', self.output.shape)
         #print('self.nmask', self.nmask.shape)
