@@ -325,9 +325,9 @@ class RealESRNetModel(SRModel_fft):
                 mask = torch.from_numpy(mask.reshape(*mask_shape).astype(np.float32))
                 return mask
             # for paired training or validation
-            mask = generate_random_mask([0.08], [4], 320)
+            mask = generate_random_mask([0.08], [4], self.lq.size()[-1])
             mask = mask.to(self.device)
-            lowfreq_mask = generate_random_mask([0.08], [1/0.08], 320)
+            lowfreq_mask = generate_random_mask([0.08], [1/0.08], self.lq.size()[-1])
             lowfreq_mask = lowfreq_mask.to(self.device)
 
             if np.random.uniform(0, 1) > self.opt['horizontal_mask_prob']:
