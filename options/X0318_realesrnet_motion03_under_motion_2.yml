@@ -1,5 +1,5 @@
 # general settings
-name: X0318_realesrnet_motion03_under_motion
+name: X0318_realesrnet_motion03_under_motion_2
 model_type: RealESRNetModel
 scale: 1
 num_gpu: auto  # auto: can infer from your visible devices automatically. official: 4 GPUs
@@ -8,7 +8,7 @@ manual_seed: 0
 gt_usm: True  # USM the ground-truth
 
 # Motion process
-low_freq : False
+low_freq : True
 rician_noise_prob: 0.0
 rician_noise_range: [0.0001, 0.0002]
 rot90_prob: 1.0 # 旋转90度概率

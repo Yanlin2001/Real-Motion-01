@@ -301,7 +301,7 @@ class RealESRNetModel(SRModel_fft):
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
 
         else:
-            self.lq = data['gt'].to(self.device)
+            self.lq = data['lq'].to(self.device)
             self.lq = self.lq[:, 0, :, :]  # only use the Y channel
             #self.lq = self.lq.unsqueeze(1)  # add channel dim
             def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
@@ -348,7 +348,7 @@ class RealESRNetModel(SRModel_fft):
 
             # 增加通道维度
             # out = torch.unsqueeze(out, dim=1)
-            print(all_image.size())
+            #print(all_image.size())
             if self.opt['low_freq'] is True:
                 self.lq = torch.stack([all_image, lowfreq_image], dim=1)
             else:
