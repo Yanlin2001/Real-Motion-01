@@ -258,11 +258,15 @@ class RealESRNetModel(SRModel_fft):
                 mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
                 # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}", K_data.shape[-1])
                 mask = mask.to(self.device)
+                lowfreq_mask = generate_random_mask([center_fraction], [1/center_fraction], K_data.shape[-1],)
+                lowfreq_mask = lowfreq_mask.to(self.device)
                 if np.random.uniform(0, 1) > horizontal_mask_prob:
                     mask = mask.t()
+                    lowfreq_mask = lowfreq_mask.t()
                 #self.mask = mask # 保存mask
                 #self.nmask = torch.logical_not(mask)
                 K_data = K_data * mask
+                lowfreq_K_data = K_data * lowfreq_mask
                 # self.under_kdata = K_data
                 # 增加通道维度
                 #self.under_kdata = torch.unsqueeze(self.under_kdata, dim=1)
@@ -270,10 +274,14 @@ class RealESRNetModel(SRModel_fft):
                 #self.under_kdata = self.under_kdata.repeat(1, 3, 1, 1)
                 # self.undersampled = True # 记录是否欠采
 
-            out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
-
+            all_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+            lowfreq_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lowfreq_K_data, dim=(-2, -1)), dim=(-2, -1)))
             # 增加通道维度
-            out = torch.unsqueeze(out, dim=1)
+            # out = torch.unsqueeze(out, dim=1)
+            if self.opt['low_freq'] is True:
+                out = torch.stack([all_image, lowfreq_image], dim=1)
+            else:
+                out = torch.stack([all_image, all_image], dim=1)
 
             # 增加通道数
             #out = out.repeat(1, 3, 1, 1)
@@ -293,10 +301,58 @@ class RealESRNetModel(SRModel_fft):
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
 
         else:
-            # for paired training or validation
-            self.lq = data['lq'].to(self.device)
+            self.lq = data['gt'].to(self.device)
             self.lq = self.lq[:, 0, :, :]  # only use the Y channel
             self.lq = self.lq.unsqueeze(1)  # add channel dim
+            def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
+                if len(center_fractions) != len(accelerations):
+                    raise ValueError("Number of center fractions should match number of accelerations")
+
+                rng = np.random.RandomState(seed)
+                choice = rng.randint(0, len(accelerations))
+                center_fraction = center_fractions[choice]
+                acceleration = accelerations[choice]
+
+                num_low_freqs = int(round(num_cols * center_fraction))
+                prob = (num_cols / acceleration - num_low_freqs) / (num_cols - num_low_freqs)
+
+                mask = rng.uniform(size=num_cols) < prob
+                pad = (num_cols - num_low_freqs + 1) // 2
+                mask[pad: pad + num_low_freqs] = True
+
+                mask_shape = [1, 1] + [1] * (len(mask.shape) - 2)
+                mask_shape[-2] = num_cols
+                mask = torch.from_numpy(mask.reshape(*mask_shape).astype(np.float32))
+                return mask
+            # for paired training or validation
+            mask = generate_random_mask([0.08], [4], 320)
+            mask = mask.to(self.device)
+            lowfreq_mask = generate_random_mask([0.08], [1/0.08], 320)
+            lowfreq_mask = lowfreq_mask.to(self.device)
+
+            if np.random.uniform(0, 1) > horizontal_mask_prob:
+                mask = mask.t()
+                lowfreq_mask = lowfreq_mask.t()
+
+            lq_kdata = torch.fft.fft2(self.lq, dim=(-2, -1))
+            lq_kdata = torch.fft.fftshift(lq_kdata, dim=(-2, -1))
+            lq_kdata = lq_kdata * mask
+            lowfreq_lq_kdata = lq_kdata * lowfreq_mask
+            all_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lq_kdata, dim=(-2, -1)), dim=(-2, -1)))
+            lowfreq_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lowfreq_lq_kdata, dim=(-2, -1)), dim=(-2, -1)))
+
+            # 增加通道维度
+            # out = torch.unsqueeze(out, dim=1)
+            #self.mask = mask # 保存mask
+            #self.nmask = torch.logical_not(mask)
+
+            # 增加通道维度
+            # out = torch.unsqueeze(out, dim=1)
+            if self.opt['low_freq'] is True:
+                self.lq = torch.stack([all_image, lowfreq_image], dim=1)
+            else:
+                self.lq = torch.stack([all_image, all_image], dim=1)
+
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt = self.gt[:, 0, :, :]  # only use the Y channel
