@@ -352,7 +352,7 @@ class RealESRNetModel(SRModel_fft):
                 self.lq = torch.stack([all_image, lowfreq_image], dim=1)
             else:
                 self.lq = torch.stack([all_image, all_image], dim=1)
-
+            print(self.lq.size())
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
                 self.gt = self.gt[:, 0, :, :]  # only use the Y channel
