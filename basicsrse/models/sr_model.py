@@ -96,6 +96,7 @@ class SRModel_fft(BaseModel):
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq)
+        '''
         self.raw_output = self.output
         if self.undersampled == True:
             self.full_kdata = torch.fft.fft2(self.output, dim=(-2, -1))
@@ -143,7 +144,7 @@ class SRModel_fft(BaseModel):
         #print('optimize_parameters')
         #print('self.output', self.output.shape)
         #print('self.nmask', self.nmask.shape)
-
+        '''
         l_total = 0
         loss_dict = OrderedDict()
         # pixel loss
