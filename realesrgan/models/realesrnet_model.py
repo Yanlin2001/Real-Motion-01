@@ -330,7 +330,7 @@ class RealESRNetModel(SRModel_fft):
             lowfreq_mask = generate_random_mask([0.08], [1/0.08], 320)
             lowfreq_mask = lowfreq_mask.to(self.device)
 
-            if np.random.uniform(0, 1) > horizontal_mask_prob:
+            if np.random.uniform(0, 1) > self.opt['horizontal_mask_prob']:
                 mask = mask.t()
                 lowfreq_mask = lowfreq_mask.t()
 
