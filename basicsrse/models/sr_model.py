@@ -96,8 +96,8 @@ class SRModel_fft(BaseModel):
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
         self.output = self.net_g(self.lq)
-        print('self.output', self.output.shape)
-        print('self.lq', self.lq.shape)
+        #print('self.output', self.output.shape)
+        #print('self.lq', self.lq.shape)
         '''
         self.raw_output = self.output
         if self.undersampled == True:
