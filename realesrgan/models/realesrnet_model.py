@@ -98,7 +98,7 @@ class RealESRNetModel(SRModel_fft):
             ori_h, ori_w = self.gt.size()[2:4]
 
             width, height = self.gt.size()[-1], self.gt.size()[-2]
-            print(self.gt.size())
+            #print(self.gt.size())
             # ----------------------- The first motion process ----------------------- #
 
             def add_rician_noise(image, mean=0, std=0.05):
@@ -278,7 +278,7 @@ class RealESRNetModel(SRModel_fft):
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
             out = torch.unsqueeze(out, dim=1)
-            print(out.size())
+            #print(out.size())
             '''
             lowfreq_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lowfreq_K_data, dim=(-2, -1)), dim=(-2, -1)))
             # 增加通道维度
@@ -301,7 +301,7 @@ class RealESRNetModel(SRModel_fft):
             # self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
             self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
-            print(self.lq.size())
+            #print(self.lq.size())
 
             # training pair pool
             self._dequeue_and_enqueue()
