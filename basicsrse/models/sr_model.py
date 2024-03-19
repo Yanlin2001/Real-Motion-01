@@ -181,6 +181,8 @@ class SRModel_fft(BaseModel):
             self.net_g_ema.eval()
             with torch.no_grad():
                 self.output = self.net_g_ema(self.lq)
+                print('self.output', self.output.shape)
+                print('self.lq', self.lq.shape)
         else:
             self.net_g.eval()
             with torch.no_grad():
