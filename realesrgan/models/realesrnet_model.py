@@ -277,6 +277,7 @@ class RealESRNetModel(SRModel_fft):
 
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+            print(out.size())
             '''
             lowfreq_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lowfreq_K_data, dim=(-2, -1)), dim=(-2, -1)))
             # 增加通道维度
