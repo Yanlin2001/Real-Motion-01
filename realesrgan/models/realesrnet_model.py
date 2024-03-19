@@ -98,6 +98,7 @@ class RealESRNetModel(SRModel_fft):
             ori_h, ori_w = self.gt.size()[2:4]
 
             width, height = self.gt.size()[-1], self.gt.size()[-2]
+            print(self.gt.size())
             # ----------------------- The first motion process ----------------------- #
 
             def add_rician_noise(image, mean=0, std=0.05):
