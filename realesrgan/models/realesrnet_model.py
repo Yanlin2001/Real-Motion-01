@@ -297,6 +297,8 @@ class RealESRNetModel(SRModel_fft):
 
             # training pair pool
             self._dequeue_and_enqueue()
+            # 模型输出保持与GT一致，便于计算PSNR和SSIM
+            self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
 
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
 
