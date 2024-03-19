@@ -362,6 +362,8 @@ class RealESRNetModel(SRModel_fft):
                 self.gt = self.gt.unsqueeze(1)  # add channel dim
                 # print(self.gt.size())
                 self.gt_usm = self.usm_sharpener(self.gt)
+                # 模型输出保持与GT一致，便于计算PSNR和SSIM
+                self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
         '''
         import datetime
         import os
