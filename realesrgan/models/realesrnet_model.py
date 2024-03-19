@@ -274,7 +274,9 @@ class RealESRNetModel(SRModel_fft):
                 #self.under_kdata = self.under_kdata.repeat(1, 3, 1, 1)
                 # self.undersampled = True # 记录是否欠采
 
-            all_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+
+            out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
+            '''
             lowfreq_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lowfreq_K_data, dim=(-2, -1)), dim=(-2, -1)))
             # 增加通道维度
             # out = torch.unsqueeze(out, dim=1)
@@ -282,9 +284,9 @@ class RealESRNetModel(SRModel_fft):
                 out = torch.stack([all_image, lowfreq_image], dim=1)
             else:
                 out = torch.stack([all_image, all_image], dim=1)
-
+            '''
             # 增加通道数
-            #out = out.repeat(1, 3, 1, 1)
+            out = out.repeat(1, self.opt['network_g']['num_in_ch'], 1, 1)
 
             # clamp and round
             self.lq = torch.clamp((out * 255.0).round(), 0, 255) / 255.
@@ -305,7 +307,9 @@ class RealESRNetModel(SRModel_fft):
         else:
             self.lq = data['lq'].to(self.device)
             self.lq = self.lq[:, 0, :, :]  # only use the Y channel
-            #self.lq = self.lq.unsqueeze(1)  # add channel dim
+            self.lq = self.lq.unsqueeze(1)  # add channel dim
+            self.lq = self.lq.repeat(1, self.opt['network_g']['num_in_ch'], 1, 1)
+            '''
             def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
                 if len(center_fractions) != len(accelerations):
                     raise ValueError("Number of center fractions should match number of accelerations")
@@ -355,6 +359,7 @@ class RealESRNetModel(SRModel_fft):
                 self.lq = torch.stack([all_image, lowfreq_image], dim=1)
             else:
                 self.lq = torch.stack([all_image, all_image], dim=1)
+            '''
             #print(self.lq.size())
             if 'gt' in data:
                 self.gt = data['gt'].to(self.device)
