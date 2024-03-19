@@ -298,11 +298,12 @@ class RealESRNetModel(SRModel_fft):
             gt_size = self.opt['gt_size']
             # self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
 
+            self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
+            print(self.lq.size())
+
             # training pair pool
             self._dequeue_and_enqueue()
             # 模型输出保持与GT一致，便于计算PSNR和SSIM
-            self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
-            print(self.lq.size())
             self.lq = self.lq.contiguous()  # for the warning: grad and param do not obey the gradient layout contract
 
         else:
