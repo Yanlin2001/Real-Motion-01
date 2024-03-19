@@ -97,7 +97,7 @@ datasets:
     io_backend:
       type: disk
 
-  val2:
+  val_2:
     name: run
     type: PairedImageDataset
     dataroot_gt: datasets/motion02/run01
