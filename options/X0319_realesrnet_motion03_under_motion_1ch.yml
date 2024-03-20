@@ -93,18 +93,34 @@ datasets:
 
   # Uncomment these for validation
   val:
-    name: gt320
+    name: gt320_h
     type: PairedImageDataset
-    dataroot_gt: datasets/motion02/gt320
-    dataroot_lq: datasets/motion02/gt320_motion_f4
+    dataroot_gt: datasets/motion02/gt320_h
+    dataroot_lq: datasets/motion02/gt320_motion_hf4
     io_backend:
       type: disk
 
   val_2:
-    name: run
+    name: gt320_v
     type: PairedImageDataset
-    dataroot_gt: datasets/motion02/run01
-    dataroot_lq: datasets/motion02/run02_f4
+    dataroot_gt: datasets/motion02/gt320_v
+    dataroot_lq: datasets/motion02/gt320_motion_vf4
+    io_backend:
+      type: disk
+
+  val_3:
+    name: run_v
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion02/run01_h
+    dataroot_lq: datasets/motion02/run02_hf4
+    io_backend:
+      type: disk
+
+  val_4:
+    name: run_h
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion02/run01_v
+    dataroot_lq: datasets/motion02/run02_vf4
     io_backend:
       type: disk
 
