@@ -16,7 +16,7 @@ rician_noise_range: [0.0001, 0.0002]
 
 rot90_prob: 1.0 # 旋转90度概率
 horizontal_mask_prob: 0.0
-undersample_prob: 1.0 # 降采样概率
+undersample_prob: 0.0 # 降采样概率
 center_fraction_range: [0.05, 0.15] # 中心部分采样范围
 acceleration_range: [4, 4] # 加速范围
 #rounds_range: [51,251] # 运动阶段数
