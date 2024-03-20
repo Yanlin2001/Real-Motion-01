@@ -241,7 +241,7 @@ class RealESRNetModel(SRModel_fft):
                 self.gt_usm = self.usm_sharpener(self.gt)
                 # 模型输出保持与GT一致，便于计算PSNR和SSIM
                 self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
-
+        '''
         import datetime
         import os
         import torchvision.transforms as transforms
@@ -271,7 +271,7 @@ class RealESRNetModel(SRModel_fft):
             print(f"Image saved at: {save_path2}")
 
         print(f"All images saved in folder: {folder_path}")
-
+        '''
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
         # do not use the synthetic process during validation
         self.is_train = False
