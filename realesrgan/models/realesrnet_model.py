@@ -253,8 +253,8 @@ class RealESRNetModel(SRModel_fft):
 
             if np.random.uniform(0, 1) < undersample_prob:
                 # center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
-                acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
-                # acceleration = 4
+                # acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
+                acceleration = 4
                 center_fraction = 4 / acceleration * 0.08
                 mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
                 # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}", K_data.shape[-1])
