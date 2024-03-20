@@ -109,7 +109,7 @@ datasets:
       type: disk
 
   val_3:
-    name: run_v
+    name: run_h
     type: PairedImageDataset
     dataroot_gt: datasets/motion02/run01_h
     dataroot_lq: datasets/motion02/run02_hf4
@@ -117,7 +117,7 @@ datasets:
       type: disk
 
   val_4:
-    name: run_h
+    name: run_v
     type: PairedImageDataset
     dataroot_gt: datasets/motion02/run01_v
     dataroot_lq: datasets/motion02/run02_vf4
