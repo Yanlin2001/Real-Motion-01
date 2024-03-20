@@ -40,9 +40,9 @@ def generate_random_mask(center_fractions: Sequence[float], accelerations: Seque
 
     # print("Generated Random Mask:")
     # print(mask)
-    print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}")
+    #print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}")
     true_count = int(mask.sum())
-    print(f"Number of True values in the mask: {true_count}")
+    #print(f"Number of True values in the mask: {true_count}")
 
     return mask
 
