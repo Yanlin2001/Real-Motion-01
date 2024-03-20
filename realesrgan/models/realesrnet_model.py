@@ -300,7 +300,7 @@ class RealESRNetModel(SRModel_fft):
             gt_size = self.opt['gt_size']
 
             self.gt = self.gt.repeat(1, self.opt['network_g']['num_out_ch'], 1, 1)
-            self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
+            #self.gt, self.lq = paired_random_crop(self.gt, self.lq, gt_size, self.opt['scale'])
             #print(self.lq.size())
 
             # training pair pool
