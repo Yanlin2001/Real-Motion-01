@@ -14,7 +14,6 @@ from torchvision.transforms.functional import rotate, resize, center_crop
 from torchvision.transforms.functional import InterpolationMode
 from typing import Sequence, Optional, Union, Tuple
 from realesrgan.archs.unet import Unet
-from realesrgan.motion_simulation import add_rician_noise, generate_random_mask, random_motion_transform, kspace_scan
 
 @MODEL_REGISTRY.register()
 class RealESRNetModel(SRModel_fft):
@@ -95,37 +94,150 @@ class RealESRNetModel(SRModel_fft):
             self.kernel1 = data['kernel1'].to(self.device)
             self.kernel2 = data['kernel2'].to(self.device)
             self.sinc_kernel = data['sinc_kernel'].to(self.device)
-            opt_step = np.random.choice(self.opt['step'])
+
             ori_h, ori_w = self.gt.size()[2:4]
 
             width, height = self.gt.size()[-1], self.gt.size()[-2]
             #print(self.gt.size())
-            # ----------------------- The motion process ----------------------- #
+            # ----------------------- The first motion process ----------------------- #
+
+            def add_rician_noise(image, mean=0, std=0.05):
+                image = image.float()
+                # 生成高斯噪声并添加到图像上
+                noise_real  = torch.randn_like(image) * std + mean
+                noise_imaginary = torch.randn_like(image) * std + mean
+                noisy_image = torch.sqrt((image + noise_real)**2 + noise_imaginary**2)
+                return noisy_image
+
+            def generate_random_mask(center_fractions: Sequence[float], accelerations: Sequence[int], num_cols: int, seed: Optional[Union[int, Tuple[int, ...]]] = None) -> torch.Tensor:
+                if len(center_fractions) != len(accelerations):
+                    raise ValueError("Number of center fractions should match number of accelerations")
+
+                rng = np.random.RandomState(seed)
+                choice = rng.randint(0, len(accelerations))
+                center_fraction = center_fractions[choice]
+                acceleration = accelerations[choice]
+
+                num_low_freqs = int(round(num_cols * center_fraction))
+                prob = (num_cols / acceleration - num_low_freqs) / (num_cols - num_low_freqs)
+
+                mask = rng.uniform(size=num_cols) < prob
+                pad = (num_cols - num_low_freqs + 1) // 2
+                mask[pad: pad + num_low_freqs] = True
+
+                mask_shape = [1, 1] + [1] * (len(mask.shape) - 2)
+                mask_shape[-2] = num_cols
+                mask = torch.from_numpy(mask.reshape(*mask_shape).astype(np.float32))
+
+                # print("Generated Random Mask:")
+                # print(mask)
+                # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}")
+                # true_count = int(mask.sum())
+                # print(f"Number of True values in the mask: {true_count}")
+
+                return mask
+
+            def random_motion_transform(image, width, height,
+                            rotate_prob = 0.5, rotate_range = [-5, 5],
+                            translation_prob = [0.2, 0.2, 0.6], translation_range = [-0.1, 0.1],
+                            perspective_prob = [0.3, 0.3, 0.4], perspective_range = [-0.1, 0.1],
+                            stretch_prob = 0.4, stretch_range = [-0.1, 0.1]):
+                # 旋转图像 rotate
+                if np.random.uniform(0, 1) < rotate_prob:
+                    rotate_angle = np.random.uniform(rotate_range[0], rotate_range[1])
+                    out = rotate(image, rotate_angle, interpolation=InterpolationMode.BILINEAR)
+                else:
+                    out = image
+
+                # 平移图像 translation
+                translation_type = np.random.choice(["left-right", "up-down", "keep"], p=translation_prob)
+                translation_rate = np.random.uniform(-translation_range[0], translation_range[0])
+                if translation_type == "left-right":
+                    out = out.roll(int(translation_rate * width), 2)
+                elif translation_type == "up-down":
+                    out = out.roll(int(translation_rate * height), 1)
+                else:
+                    out = out
+
+                # 透视变换 perspective
+                original_pts = [[0, 0], [width, 0], [0, height], [width, height]]
+                perspective_type = np.random.choice(["pitch", "yaw", "keep"], p=perspective_prob)
+                pitch_rate1 = np.random.uniform(-perspective_range[0], perspective_range[0])
+                pitch_rate2 = np.random.uniform(-perspective_range[0], perspective_range[0])
+                yaw_rate1 = np.random.uniform(-perspective_range[1], perspective_range[1])
+                yaw_rate2 = np.random.uniform(-perspective_range[1], perspective_range[1])
+                if np.random.uniform(0, 1) < stretch_prob:
+                    stretch_rate1 = np.random.uniform(stretch_range[0], stretch_range[1])
+                    stretch_rate2 = np.random.uniform(stretch_range[0], stretch_range[1])
+                else:
+                    stretch_rate1 = 0
+                    stretch_rate2 = 0
+                if perspective_type == "pitch":
+                    pitch_pts = [
+                        [0 - pitch_rate1 * width, 0 - stretch_rate1 * height],
+                        [width + pitch_rate1 * width, 0 - stretch_rate1 * height],
+                        [0 - pitch_rate2 * width, height + stretch_rate2 * height],
+                        [width + pitch_rate2 * width, height + stretch_rate2 * height],
+                    ]
+                    yaw_pts = original_pts
+                    out = perspective_transform(out, original_pts, pitch_pts)
+                elif perspective_type == "yaw":
+                    yaw_pts = [
+                        [0 - stretch_rate1 * width, 0 - yaw_rate1 * height],
+                        [width + stretch_rate2 * width, 0 - yaw_rate2 * height],
+                        [0 - stretch_rate1 * width, height + yaw_rate1 * height],
+                        [width + stretch_rate2 * width, height + yaw_rate2 * height],
+                    ]
+                    pitch_pts = original_pts
+                    out = perspective_transform(out, original_pts, yaw_pts)
+                else:
+                    pitch_pts = original_pts
+                    yaw_pts = original_pts
+                    stretch_pts = [
+                        [0 , 0 - stretch_rate1 * height],
+                        [width, 0 - stretch_rate1 * height],
+                        [0 , height + stretch_rate2 * height],
+                        [width, height + stretch_rate2 * height],
+                    ]
+                    out = perspective_transform(out, original_pts, stretch_pts)
+
+                return out
+
+            def kspace_scan(image_tensor, K_data, cur_round, tol_round):
+                # 将图像张量转换为K空间数据
+                k_space_data = torch.fft.fft2(image_tensor, dim=(-2, -1))
+
+                # 进行 fftshift 操作将低频移到中心
+                k_space_data = torch.fft.fftshift(k_space_data, dim=(-2, -1))
+
+                # 获取图像的高度和宽度
+                _, H, W = image_tensor.shape
+
+                # 计算当前应该填充的行范围
+                start_row = cur_round * H // tol_round
+                end_row = (cur_round + 1) * H // tol_round
+
+                # 截取并填充到K_data中
+                K_data[:, start_row:end_row, :] = k_space_data[:, start_row:end_row, :]
+
+                return K_data
 
             # 转为单通道灰度图
             L_gt = self.gt.mean(dim=1, keepdim=False)
 
+            rounds = np.random.choice(range(self.opt['rounds_range'][0], self.opt['rounds_range'][1] + 1, 2))
+
             K_data = np.zeros((L_gt.shape[0], L_gt.shape[1], L_gt.shape[2]), dtype=np.complex64)
             K_data = torch.from_numpy(K_data).to(self.device)
-            width, height = L_gt.size()[-1], L_gt.size()[-2]
-            if self.opt['Gp'] == 'v':
-                rounds = height
-            elif self.opt['Gp'] == 'h':
-                rounds = width
-            else:
-                raise ValueError('Gp should be either "v" or "h"')
 
-            for i in range(0, rounds, opt_step):
-                if i > rounds * (31/64) and i < rounds * (33/64):
-                    K_data = kspace_scan(L_gt, K_data, i, step=opt_step, Gp=self.opt['Gp'])
+            for i in range(rounds):
+                if i > rounds * (5/11) and i < rounds * (6/11):
+                    K_data = kspace_scan(L_gt, K_data, i, rounds)
                 else:
                     out_image = random_motion_transform(L_gt, width, height, rotate_prob=self.opt['rotate_prob'], rotate_range=self.opt['rotate_range'], translation_prob=self.opt['translation_prob'], translation_range=self.opt['translation_range'], perspective_prob=self.opt['perspective_prob'], perspective_range=self.opt['perspective_range'], stretch_prob=self.opt['stretch_prob'], stretch_range=self.opt['stretch_range'])
 
                     #out_image = center_crop(out_image, (400, 400))
-                    K_data = kspace_scan(out_image, K_data, i, step=opt_step, Gp=self.opt['Gp'])
-            K_data[:, width * (25//64):width * (39//64), :] = L_gt[:, width * (25//64):width * (39//64), :]
-
-            # ----------------------- The noise process ----------------------- #
+                    K_data = kspace_scan(out_image, K_data, i, rounds)
 
             if np.random.uniform(0, 1) < self.opt['rician_noise_prob']:
                 temp_reconstructed_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
@@ -139,23 +251,43 @@ class RealESRNetModel(SRModel_fft):
 
             self.undersampled = False
 
-            # ----------------------- The undersample process ----------------------- #
-
             if np.random.uniform(0, 1) < undersample_prob:
                 # center_fraction = np.random.uniform(center_fraction_range[0], center_fraction_range[1])
-                acceleration = np.random.choice(acceleration_range)
-
+                # acceleration = np.random.randint(acceleration_range[0], acceleration_range[1])
+                acceleration = 4
                 center_fraction = 4 / acceleration * 0.08
-                mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1])
+                mask = generate_random_mask([center_fraction], [acceleration], K_data.shape[-1],)
                 # print(f"Center Fraction: {center_fraction}, Acceleration: {acceleration}", K_data.shape[-1])
                 mask = mask.to(self.device)
+                lowfreq_mask = generate_random_mask([center_fraction], [1/center_fraction], K_data.shape[-1],)
+                lowfreq_mask = lowfreq_mask.to(self.device)
                 if np.random.uniform(0, 1) > horizontal_mask_prob:
                     mask = mask.t()
+                    lowfreq_mask = lowfreq_mask.t()
+                #self.mask = mask # 保存mask
+                #self.nmask = torch.logical_not(mask)
                 K_data = K_data * mask
+                lowfreq_K_data = K_data * lowfreq_mask
+                # self.under_kdata = K_data
+                # 增加通道维度
+                #self.under_kdata = torch.unsqueeze(self.under_kdata, dim=1)
+                # 增加通道数
+                #self.under_kdata = self.under_kdata.repeat(1, 3, 1, 1)
+                # self.undersampled = True # 记录是否欠采
+
 
             out = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(K_data, dim=(-2, -1)), dim=(-2, -1)))
             out = torch.unsqueeze(out, dim=1)
-
+            #print(out.size())
+            '''
+            lowfreq_image = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(lowfreq_K_data, dim=(-2, -1)), dim=(-2, -1)))
+            # 增加通道维度
+            # out = torch.unsqueeze(out, dim=1)
+            if self.opt['low_freq'] is True:
+                out = torch.stack([all_image, lowfreq_image], dim=1)
+            else:
+                out = torch.stack([all_image, all_image], dim=1)
+            '''
             # 增加通道数
             out = out.repeat(1, self.opt['network_g']['num_in_ch'], 1, 1)
 

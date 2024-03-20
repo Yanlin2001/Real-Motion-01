@@ -8,12 +8,9 @@ manual_seed: 0
 gt_usm: True  # USM the ground-truth
 
 # Motion process
-Gp: 'v'
-step: [4, 8]
-
+low_freq : False
 rician_noise_prob: 0.0
 rician_noise_range: [0.0001, 0.0002]
-
 rot90_prob: 1.0 # 旋转90度概率
 horizontal_mask_prob: 0.0
 undersample_prob: 1.0 # 降采样概率
