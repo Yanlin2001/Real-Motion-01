@@ -1,0 +1,69 @@
+name: Z0321_realesrnet_motion03_under_v2
+model_type: RealESRNetModel
+scale: 1
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+
+  test_1:
+    name: gt320_h
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion02/gt320_h
+    dataroot_lq: A:/X0321_realesrnet_motion03_under_v/gt320_motion_hf4
+    io_backend:
+      type: disk
+
+  test_2:
+    name: gt320_v
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion02/gt320_v
+    dataroot_lq: A:/X0321_realesrnet_motion03_under_v/gt320_motion_vf4
+    io_backend:
+      type: disk
+
+  test_3:
+    name: run_h
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion02/run01_h
+    dataroot_lq: A:/X0321_realesrnet_motion03_under_v/run02_hf4
+    io_backend:
+      type: disk
+
+  test_4:
+    name: run_v
+    type: PairedImageDataset
+    dataroot_gt: datasets/motion02/run01_v
+    dataroot_lq: A:/X0321_realesrnet_motion03_under_v/run02_vf4
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: RRDBNet
+  num_in_ch: 1
+  num_out_ch: 1
+  num_feat: 64
+  num_block: 23
+  num_grow_ch: 32
+  scale: 1
+
+# path
+path:
+  pretrain_network_g: A:/X0321_realesrnet_motion03_under_motion_h/experiments/X0321_realesrnet_motion03_under_motion_h/models/net_g_30000.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: false

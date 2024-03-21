@@ -123,7 +123,7 @@ class RealESRNetModel(SRModel_fft):
 
                     #out_image = center_crop(out_image, (400, 400))
                     K_data = kspace_scan(out_image, K_data, i, step=opt_step, Gp=self.opt['Gp'])
-            K_data[:, width * (22//64):width * (42//64), :] = L_gt[:, width * (22//64):width * (42//64), :]
+            K_data[:, width * (25//64):width * (39//64), :] = L_gt[:, width * (25//64):width * (39//64), :]
 
             # ----------------------- The noise process ----------------------- #
 
